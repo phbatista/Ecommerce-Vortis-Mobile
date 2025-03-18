@@ -1,24 +1,22 @@
-let clientes = []; // 🔹 Armazena a lista de clientes globalmente
+let clientes = [];
 
 document.addEventListener("DOMContentLoaded", async function () {
-    await carregarClientes(); // Carregar clientes ao carregar a página
+    await carregarClientes();
 });
 
-// 🔹 Função para buscar clientes no backend
 async function carregarClientes() {
     try {
         let resposta = await fetch("http://localhost:8080/api/clientes");
-        clientes = await resposta.json(); // 🔹 Salva os clientes na variável global
+        clientes = await resposta.json();
         exibirClientes(clientes);
     } catch (error) {
         console.error("Erro ao carregar clientes:", error);
     }
 }
 
-// 🔹 Função para exibir clientes na tabela
 function exibirClientes(lista) {
     let tabela = document.getElementById("listaClientes");
-    tabela.innerHTML = ""; // 🔄 Limpa a tabela antes de renderizar
+    tabela.innerHTML = "";
 
     lista.forEach(cliente => {
         let status = cliente.status === "1" ? "Ativado" : "Desativado";
@@ -42,7 +40,6 @@ function exibirClientes(lista) {
     });
 }
 
-// 🔍 Filtrar clientes
 function filtrarClientes() {
     let campo = document.getElementById("filtroCampo").value;
     let valor = document.getElementById("filtroValor").value.toLowerCase();
@@ -55,12 +52,10 @@ function filtrarClientes() {
     let clientesFiltrados = clientes.filter(cliente => {
         let campoValor = cliente[campo];
 
-        // 🔹 Se for telefone, ajusta o valor
         if (campo === "telefone" && cliente.telefone) {
             campoValor = `${cliente.telefone.ddd} ${cliente.telefone.numero}`;
         }
 
-        // 🔹 Se for status, ajusta para "Ativado" ou "Desativado"
         if (campo === "status") {
             campoValor = cliente.status === "1" ? "Ativado" : "Desativado";
         }
@@ -71,7 +66,6 @@ function filtrarClientes() {
     exibirClientes(clientesFiltrados);
 }
 
-// 🔄 Restaurar a lista original
 function limparFiltro() {
     document.getElementById("filtroValor").value = "";
     exibirClientes(clientes); // 🔹 Reexibe todos os clientes
@@ -87,7 +81,7 @@ async function ativarDesativarCliente(id) {
 
             if (resposta.ok) {
                 alert("Status do cliente atualizado com sucesso!");
-                location.reload(); // Atualiza a lista de clientes
+                location.reload();
             } else {
                 alert("Erro ao atualizar status do cliente.");
             }

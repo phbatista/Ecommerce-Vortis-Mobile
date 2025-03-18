@@ -73,7 +73,8 @@
                     </div>
                     <div class="col-md-2 mb-3">
                         <label class="form-label">CEP</label>
-                        <input id="cep_residencial" type="text" class="form-control" required>
+                        <input id="cep_residencial" type="text" class="form-control" pattern="d{8}" maxlength="8" required
+                               oninput="this.value = this.value.replace(/\D/g, '')">
                     </div>
                     <div class="col-md-2 mb-3">
                         <label class="form-label">Bairro</label>
@@ -85,7 +86,7 @@
                     </div>
                     <div class="col-md-2 mb-3">
                         <label class="form-label">Estado</label>
-                        <input id="estado_residencial" type="text" class="form-control" required>
+                        <input id="estado_residencial" type="text" class="form-control" pattern="d{2}" maxlength="2" required>
                     </div>
                     <div class="col-md-2 mb-3">
                         <label class="form-label">País</label>

@@ -38,9 +38,17 @@ document.addEventListener("DOMContentLoaded", function () {
             if (resposta.ok) {
                 alert("Cliente cadastrado com sucesso!");
                 document.getElementById("clienteForm").reset();
+
+                setTimeout(() => {
+                    let mensagemSucesso = document.getElementById("mensagem-sucesso");
+                    mensagemSucesso.style.display = "block";
+                    mensagemSucesso.innerText = "Cadastro realizado com sucesso!";
+                }, 2000);
+
             } else {
                 alert("Erro ao cadastrar cliente: " + (resultado.erro || "Erro desconhecido"));
             }
+
         } catch (error) {
             console.error("Erro ao enviar requisição:", error);
             alert("Erro ao conectar com o servidor.");

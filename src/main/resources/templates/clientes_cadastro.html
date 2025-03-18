@@ -31,6 +31,7 @@
     </div>
 </nav>
 
+
 <div class="container mt-5">
     <h2 class="mb-4">Cadastro de Clientes</h2>
 
@@ -49,7 +50,7 @@
         <div class="row">
             <div class="col-md-6 mb-3">
                 <label for="cpf" class="form-label">CPF</label>
-                <input type="text" id="cpf" class="form-control" maxlength="11" required>
+                <input type="text" id="cpf" name="cpf" class="form-control" pattern="\d{11}" maxlength="11" oninput="this.value = this.value.replace(/\D/g, '')">
             </div>
             <div class="col-md-6 mb-3">
                 <label for="genero" class="form-label">Gênero</label>
@@ -74,11 +75,11 @@
             </div>
             <div class="col-md-2 mb-3">
                 <label for="ddd" class="form-label">DDD</label>
-                <input type="number" id="ddd" class="form-control" maxlength="2" required>
+                <input type="text" id="ddd" name="ddd" class="form-control" pattern="\d{2}" maxlength="2" oninput="this.value = this.value.replace(/\D/g, '')">
             </div>
             <div class="col-md-2 mb-3">
                 <label for="telefone" class="form-label">Número</label>
-                <input type="number" id="telefone" class="form-control" maxlength="9" required>
+                <input type="number" id="telefone" class="form-control" required>
             </div>
             <div class="col-md-6 mb-3">
                 <label for="senha" class="form-label">Senha</label>
@@ -122,13 +123,13 @@
                     </div>
                     <div class="col-md-2 mb-3">
                         <label class="form-label">Número</label>
-                        <input type="number" id="numero_residencial" class="form-control" required>
+                        <input type="number" id="numero_residencial" class="form-control" maxlength="5" required>
                     </div>
                 <div class="row">
                     </div>
                     <div class="col-md-2 mb-3">
                         <label class="form-label">CEP</label>
-                        <input id="cep_residencial" type="number" class="form-control" maxlength="8" required>
+                        <input type="text" id="cep_residencial" name="cep_residencial" class="form-control" pattern="\d{8}" maxlength="8" required oninput="this.value = this.value.replace(/\D/g, '')">
                     </div>
                     <div class="col-md-2 mb-3">
                         <label class="form-label">Bairro</label>
@@ -274,7 +275,7 @@
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label class="form-label">Número do Cartão</label>
-                            <input type="number" class="form-control cartaoNumero" maxlength="16" required>
+                            <input type="text" class="form-control cartaoNumero" pattern="\d{16}" maxlength="16" required oninput="this.value = this.value.replace(/\D/g, '')">
                         </div>
                         <div class="col-md-3 mb-3">
                             <label class="form-label">Bandeira</label>
@@ -302,16 +303,18 @@
                         </div>
                         <div class="col-md-3 mb-3">
                             <label class="form-label">CVV</label>
-                            <input type="number" class="form-control cartaoCVV" maxlength="3" required>
+                            <input type="text" class="form-control cartaoCVV" pattern="\d{3}" maxlength="3" required oninput="this.value = this.value.replace(/\D/g, '')">
                         </div>
                     </div>
                 </div>
             </div>
 
         <button type="button" class="btn btn-secondary mt-2" onclick="adicionarCartao()">Adicionar Cartão Secundário</button>
-        <div class="mt-4"><button type="submit" class="btn btn-primary">Cadastrar</button></div>
-
-</div>
+            <button type="submit" id="submit" class="btn btn-primary">Cadastrar</button>
+        </div>
+        <div id="mensagem-sucesso" style="display: none;" class="alert alert-success">
+            Cadastro realizado com sucesso!
+        </div>
 
 <script>
     function adicionarCartao() {
@@ -324,7 +327,7 @@
         <div class="row">
             <div class="col-md-6 mb-3">
                 <label class="form-label">Número do Cartão</label>
-                <input type="text" class="form-control cartaoNumero" required>
+                <input type="text" class="form-control numeroCartao" pattern="\d{16}" maxlength="16" required oninput="this.value = this.value.replace(/\\D/g, '')">
             </div>
             <div class="col-md-3 mb-3">
                 <label class="form-label">Bandeira</label>
@@ -352,7 +355,7 @@
             </div>
             <div class="col-md-3 mb-3">
                 <label class="form-label">CVV</label>
-                <input type="text" class="form-control cartaoCVV" required>
+                <input type="text" class="form-control cartaoCVV" pattern="\d{3}" maxlength="3" required oninput="this.value = this.value.replace(/\\D/g, '')">
             </div>
         </div>
         <button type="button" class="btn btn-danger btn-sm mt-2" onclick="removerCartao(this)">Remover</button>

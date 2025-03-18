@@ -37,9 +37,6 @@ public class ClienteControlador {
     //cadastrar cliente
     @PostMapping
     public ResponseEntity<?> cadastrar(@RequestBody Cliente cliente) {
-        System.out.println("Cliente recebido: " + cliente.getNome());
-        System.out.println("Cartões recebidos: " + cliente.getCartoes().size());
-
         Cliente clienteSalvo = clienteServico.salvar(cliente);
         return ResponseEntity.ok(clienteSalvo);
     }
