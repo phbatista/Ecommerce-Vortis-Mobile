@@ -2,11 +2,8 @@ package br.com.fatec.vortismobile.testes;
 
 import io.github.bonigarcia.wdm.WebDriverManager;
 import org.junit.jupiter.api.*;
-import org.openqa.selenium.By;
-import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.edge.EdgeDriver;
+import org.openqa.selenium.*;
+import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import java.time.Duration;
@@ -17,20 +14,20 @@ public class ClienteUITeste {
 
     @BeforeAll
     public static void setup() {
-        WebDriverManager.edgedriver().clearDriverCache().setup();
-        driver = new EdgeDriver();
+        WebDriverManager.chromedriver().setup();
+        driver = new ChromeDriver();
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
         driver.manage().window().maximize();
     }
 
     @Test
-    public void testCadastroCliente() {
+    public void testCadastroCliente() throws InterruptedException {
         driver.get("http://localhost:8080/clientes_cadastro");
 
         //dados pessoais
         driver.findElement(By.id("nome")).sendKeys("João Teste");
         driver.findElement(By.id("dataNascimento")).sendKeys("15/05/1995");
-        driver.findElement(By.id("cpf")).sendKeys("12345678901");
+        driver.findElement(By.id("cpf")).sendKeys("14185296351");
         driver.findElement(By.id("genero")).sendKeys("Masculino");
         driver.findElement(By.id("email")).sendKeys("joao@email.com");
         driver.findElement(By.id("tipoTelefone")).sendKeys("Celular");
@@ -80,15 +77,292 @@ public class ClienteUITeste {
         driver.findElement(By.cssSelector(".nomeCartao")).sendKeys("JOAO TESTE");
         driver.findElement(By.cssSelector(".cartaoPrincipal")).click();
 
-        //cadastrar
+        //clica no botão cadastrar
         driver.findElement(By.id("submit")).click();
+        Thread.sleep(2000);
 
-        //procura mensagem com sucesso
-        WebElement successMessage = driver.findElement(By.id("mensagem-sucesso"));
-        ((JavascriptExecutor) driver).executeScript("arguments[0].style.display='block';", successMessage);
+        //clica em ok
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        try {
+            Alert alert = wait.until(ExpectedConditions.alertIsPresent());
+            System.out.println(alert.getText());
+            alert.accept();
+        } catch (Exception e) {
+            System.out.println("Nenhum alerta encontrado.");
+        }
 
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
-        wait.until(ExpectedConditions.visibilityOf(successMessage));
-        System.out.println("Texto da mensagem de sucesso: " + successMessage.getText());
+        //redireciona para lista
+        driver.get("http://localhost:8080/clientes_lista");
+        Thread.sleep(2000);
+
+        //seleciona CPF
+        WebElement filtroSelect = wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("select")));
+        filtroSelect.click();
+        WebElement opcaoCpf = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//option[contains(text(),'CPF')]")));
+        opcaoCpf.click();
+        Thread.sleep(1000);
+
+        //insere CPF
+        WebElement inputCPF = wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("input[placeholder='Digite sua busca']")));
+        inputCPF.sendKeys("14185296351");
+        Thread.sleep(1000);
+
+        //clica no botão buscar
+        WebElement btnBuscar = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//button[contains(text(),'Buscar')]")));
+        btnBuscar.click();
+        Thread.sleep(1000);
+
+        //clica no botão editar
+        WebElement btnEditar = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//tr[td[contains(text(), '14185296351')]]//button[contains(@class, 'btn-warning')]")));
+        btnEditar.click();
+        Thread.sleep(1000);
+
+        WebElement btnAlterarDados = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//button[contains(text(),'ALTERAR DADOS CADASTRAIS')]")));
+        btnAlterarDados.click();
+        Thread.sleep(2000);
+
+        //alterando dados
+        WebElement nome = wait.until(ExpectedConditions.elementToBeClickable(By.id("nome")));
+        nome.clear();
+        nome.sendKeys("João Alterado");
+
+        WebElement email = driver.findElement(By.id("email"));
+        email.clear();
+        email.sendKeys("joao.alterado@email.com");
+
+        WebElement telefone = driver.findElement(By.id("telefone"));
+        telefone.clear();
+        telefone.sendKeys("999777666");
+        Thread.sleep(2000);
+
+        //salvar dados
+        WebElement btnSalvar = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//button[contains(text(),'Salvar Alterações')]")));
+        btnSalvar.click();
+        Thread.sleep(2000);
+
+        //clica em ok
+        WebDriverWait wait1 = new WebDriverWait(driver, Duration.ofSeconds(10));
+        try {
+            Alert alert = wait1.until(ExpectedConditions.alertIsPresent());
+            System.out.println(alert.getText());
+            alert.accept();
+        } catch (Exception e) {
+            System.out.println("Nenhum alerta encontrado.");
+        }
+        Thread.sleep(2000);
+
+        //sequencia
+        testEditarEndereco();
+        testEditarCartao();
+        testEditarSenha();
+        testAtivarDesativar();
+        testExcluir();
+    }
+
+    //editar endereço
+    public void testEditarEndereco() throws InterruptedException {
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+
+        //botão alterar endereço
+        WebElement btnAlterarEndereco = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//button[contains(text(),'ALTERAR ENDEREÇOS')]")));
+        btnAlterarEndereco.click();
+        Thread.sleep(2000);
+
+        //altera o endereço residencial
+        driver.findElement(By.id("nome_logradouro_residencial")).clear();
+        driver.findElement(By.id("nome_logradouro_residencial")).sendKeys("Rua das Flores");
+        driver.findElement(By.id("numero_residencial")).clear();
+        driver.findElement(By.id("numero_residencial")).sendKeys("123");
+        driver.findElement(By.id("cep_residencial")).clear();
+        driver.findElement(By.id("cep_residencial")).sendKeys("15915915");
+        driver.findElement(By.id("bairro_residencial")).clear();
+        driver.findElement(By.id("bairro_residencial")).sendKeys("Centro");
+        driver.findElement(By.id("cidade_residencial")).clear();
+        driver.findElement(By.id("cidade_residencial")).sendKeys("Manaus");
+        driver.findElement(By.id("estado_residencial")).clear();
+        driver.findElement(By.id("estado_residencial")).sendKeys("AM");
+
+        //copia o endereço residencial para os outros endereços
+        WebElement btnCopiar = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//button[contains(text(),'Copiar Endereço para Cobrança e Entrega')]")));
+        btnCopiar.click();
+        Thread.sleep(1000);
+
+        //salvar endereços
+        WebElement btnSalvar = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//button[contains(text(),'Salvar Alterações')]")));
+        btnSalvar.click();
+        Thread.sleep(2000);
+
+        //clica em ok
+        WebDriverWait wait1 = new WebDriverWait(driver, Duration.ofSeconds(10));
+        try {
+            Alert alert = wait1.until(ExpectedConditions.alertIsPresent());
+            System.out.println(alert.getText());
+            alert.accept();
+        } catch (Exception e) {
+            System.out.println("Nenhum alerta encontrado.");
+        }
+        Thread.sleep(2000);
+    }
+
+    //alterar cartão
+    public void testEditarCartao() throws InterruptedException {
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+
+        //clica no botão alterar cartões
+        WebElement btnAlterarCartao = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//button[contains(text(),'ALTERAR CARTÕES')]")));
+        btnAlterarCartao.click();
+        Thread.sleep(2000);
+
+        //altera os dados
+        WebElement cartaoNumero = driver.findElement(By.cssSelector(".cartaoNumero"));
+        cartaoNumero.clear();
+        cartaoNumero.sendKeys("5555555555554444");
+        WebElement cartaoBandeira = driver.findElement(By.cssSelector(".cartaoBandeira"));
+        cartaoBandeira.sendKeys("Elo");
+        WebElement cartaoNome = driver.findElement(By.cssSelector(".nomeCartao"));
+        cartaoNome.clear();
+        cartaoNome.sendKeys("JOAO ALTERADO");
+        Thread.sleep(1000);
+
+        //salvar cartões
+        WebElement btnSalvar = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//button[contains(text(),'Salvar Alterações')]")));
+        btnSalvar.click();
+        Thread.sleep(2000);
+
+        //clica em ok
+        WebDriverWait wait1 = new WebDriverWait(driver, Duration.ofSeconds(10));
+        try {
+            Alert alert = wait1.until(ExpectedConditions.alertIsPresent());
+            System.out.println(alert.getText());
+            alert.accept();
+        } catch (Exception e) {
+            System.out.println("Nenhum alerta encontrado.");
+        }
+        Thread.sleep(2000);
+    }
+
+    //alterar senha
+    public void testEditarSenha() throws InterruptedException {
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+
+        //clica no botão alterar senha
+        WebElement btnAlterarSenha = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//button[contains(text(),'ALTERAR SENHA')]")));
+        btnAlterarSenha.click();
+        Thread.sleep(2000);
+
+        //bota senha atual
+        WebElement senhaAtual = driver.findElement(By.id("senhaAtual"));
+        senhaAtual.sendKeys("Senha#123");
+
+        //bota senha nova
+        WebElement novaSenha = driver.findElement(By.id("novaSenha"));
+        novaSenha.sendKeys("NovaSenha#123");
+        WebElement confirmarSenha = driver.findElement(By.id("confirmarSenha"));
+        confirmarSenha.sendKeys("NovaSenha#123");
+        Thread.sleep(2000);
+
+        //salvar senha
+        WebElement btnSalvar = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//button[contains(text(),'Alterar Senha')]")));
+        btnSalvar.click();
+        Thread.sleep(2000);
+
+        //clica em ok
+        WebDriverWait wait1 = new WebDriverWait(driver, Duration.ofSeconds(10));
+        try {
+            Alert alert = wait1.until(ExpectedConditions.alertIsPresent());
+            System.out.println(alert.getText());
+            alert.accept();
+        } catch (Exception e) {
+            System.out.println("Nenhum alerta encontrado.");
+        }
+        Thread.sleep(2000);
+    }
+
+    //ativar/desativar
+    public void testAtivarDesativar() throws InterruptedException {
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+
+        driver.get("http://localhost:8080/clientes_lista");
+
+        //seleciona CPF
+        WebElement filtroSelect = wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("select")));
+        filtroSelect.click();
+        WebElement opcaoCpf = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//option[contains(text(),'CPF')]")));
+        opcaoCpf.click();
+        Thread.sleep(1000);
+
+        //insere CPF
+        WebElement inputCPF = wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("input[placeholder='Digite sua busca']")));
+        inputCPF.sendKeys("14185296351");
+        Thread.sleep(1000);
+
+        //clica no botão buscar
+        WebElement btnBuscar = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//button[contains(text(),'Buscar')]")));
+        btnBuscar.click();
+        Thread.sleep(1000);
+
+        //clica no botão ativar/desativar
+        WebElement btnEditar = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//button[contains(text(),'Ativar/Desativar')]")));
+        btnEditar.click();
+        Thread.sleep(2000);
+
+        //clica em ok
+        WebDriverWait wait2 = new WebDriverWait(driver, Duration.ofSeconds(10));
+        try {
+            Alert alert = wait2.until(ExpectedConditions.alertIsPresent());
+            System.out.println(alert.getText());
+            alert.accept();
+        } catch (Exception e) {
+            System.out.println("Nenhum alerta encontrado.");
+        }
+        Thread.sleep(2000);
+
+        //clica em ok
+        WebDriverWait wait3 = new WebDriverWait(driver, Duration.ofSeconds(10));
+        try {
+            Alert alert = wait3.until(ExpectedConditions.alertIsPresent());
+            System.out.println(alert.getText());
+            alert.accept();
+        } catch (Exception e) {
+            System.out.println("Nenhum alerta encontrado.");
+        }
+        Thread.sleep(2000);
+    }
+
+    //excluir cliente
+    public void testExcluir() throws InterruptedException {
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+
+        //seleciona CPF
+        WebElement filtroSelect1 = wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("select")));
+        filtroSelect1.click();
+        WebElement opcaoCpf1 = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//option[contains(text(),'CPF')]")));
+        opcaoCpf1.click();
+        Thread.sleep(1000);
+
+        //insere CPF
+        WebElement inputCPF1 = wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("input[placeholder='Digite sua busca']")));
+        inputCPF1.sendKeys("14185296351");
+        Thread.sleep(1000);
+
+        //clica no botão buscar
+        WebElement btnBuscar1 = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//button[contains(text(),'Buscar')]")));
+        btnBuscar1.click();
+        Thread.sleep(1000);
+
+        //clica no botão excluir
+        WebElement btnExcluir = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//button[contains(text(),'Excluir')]")));
+        btnExcluir.click();
+        Thread.sleep(2000);
+
+        //clica em ok
+        WebDriverWait wait4 = new WebDriverWait(driver, Duration.ofSeconds(10));
+        try {
+            Alert alert = wait4.until(ExpectedConditions.alertIsPresent());
+            System.out.println(alert.getText());
+            alert.accept();
+        } catch (Exception e) {
+            System.out.println("Nenhum alerta encontrado.");
+        }
     }
 }
