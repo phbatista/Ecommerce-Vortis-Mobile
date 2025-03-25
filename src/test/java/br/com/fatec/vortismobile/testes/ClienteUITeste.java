@@ -5,8 +5,10 @@ import org.junit.jupiter.api.*;
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import java.time.Duration;
+import java.util.List;
 
 public class ClienteUITeste {
 
@@ -96,28 +98,34 @@ public class ClienteUITeste {
         Thread.sleep(2000);
 
         //seleciona CPF
-        WebElement filtroSelect = wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("select")));
+        WebElement filtroSelect = wait.until(ExpectedConditions.elementToBeClickable
+                (By.cssSelector("select")));
         filtroSelect.click();
-        WebElement opcaoCpf = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//option[contains(text(),'CPF')]")));
+        WebElement opcaoCpf = wait.until(ExpectedConditions.elementToBeClickable
+                (By.xpath("//option[contains(text(),'CPF')]")));
         opcaoCpf.click();
         Thread.sleep(1000);
 
         //insere CPF
-        WebElement inputCPF = wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("input[placeholder='Digite sua busca']")));
+        WebElement inputCPF = wait.until(ExpectedConditions.presenceOfElementLocated
+                (By.cssSelector("input[placeholder='Digite sua busca']")));
         inputCPF.sendKeys("14185296351");
         Thread.sleep(1000);
 
         //clica no botão buscar
-        WebElement btnBuscar = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//button[contains(text(),'Buscar')]")));
+        WebElement btnBuscar = wait.until(ExpectedConditions.elementToBeClickable
+                (By.xpath("//button[contains(text(),'Buscar')]")));
         btnBuscar.click();
         Thread.sleep(1000);
 
         //clica no botão editar
-        WebElement btnEditar = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//tr[td[contains(text(), '14185296351')]]//button[contains(@class, 'btn-warning')]")));
+        WebElement btnEditar = wait.until(ExpectedConditions.elementToBeClickable
+                (By.xpath("//tr[td[contains(text(), '14185296351')]]//button[contains(@class, 'btn-warning')]")));
         btnEditar.click();
         Thread.sleep(1000);
 
-        WebElement btnAlterarDados = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//button[contains(text(),'ALTERAR DADOS CADASTRAIS')]")));
+        WebElement btnAlterarDados = wait.until(ExpectedConditions.elementToBeClickable
+                (By.xpath("//button[contains(text(),'ALTERAR DADOS CADASTRAIS')]")));
         btnAlterarDados.click();
         Thread.sleep(2000);
 
@@ -136,7 +144,8 @@ public class ClienteUITeste {
         Thread.sleep(2000);
 
         //salvar dados
-        WebElement btnSalvar = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//button[contains(text(),'Salvar Alterações')]")));
+        WebElement btnSalvar = wait.until(ExpectedConditions.elementToBeClickable
+                (By.xpath("//button[contains(text(),'Salvar Alterações')]")));
         btnSalvar.click();
         Thread.sleep(2000);
 
@@ -164,7 +173,8 @@ public class ClienteUITeste {
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
 
         //botão alterar endereço
-        WebElement btnAlterarEndereco = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//button[contains(text(),'ALTERAR ENDEREÇOS')]")));
+        WebElement btnAlterarEndereco = wait.until(ExpectedConditions.elementToBeClickable
+                (By.xpath("//button[contains(text(),'ALTERAR ENDEREÇOS')]")));
         btnAlterarEndereco.click();
         Thread.sleep(2000);
 
@@ -183,12 +193,14 @@ public class ClienteUITeste {
         driver.findElement(By.id("estado_residencial")).sendKeys("AM");
 
         //copia o endereço residencial para os outros endereços
-        WebElement btnCopiar = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//button[contains(text(),'Copiar Endereço para Cobrança e Entrega')]")));
+        WebElement btnCopiar = wait.until(ExpectedConditions.elementToBeClickable
+                (By.xpath("//button[contains(text(),'Copiar Endereço para Cobrança e Entrega')]")));
         btnCopiar.click();
         Thread.sleep(1000);
 
         //salvar endereços
-        WebElement btnSalvar = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//button[contains(text(),'Salvar Alterações')]")));
+        WebElement btnSalvar = wait.until(ExpectedConditions.elementToBeClickable
+                (By.xpath("//button[contains(text(),'Salvar Alterações')]")));
         btnSalvar.click();
         Thread.sleep(2000);
 
@@ -209,23 +221,44 @@ public class ClienteUITeste {
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
 
         //clica no botão alterar cartões
-        WebElement btnAlterarCartao = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//button[contains(text(),'ALTERAR CARTÕES')]")));
+        WebElement btnAlterarCartao = wait.until(ExpectedConditions.elementToBeClickable
+                (By.xpath("//button[contains(text(),'ALTERAR CARTÕES')]")));
         btnAlterarCartao.click();
         Thread.sleep(2000);
 
-        //altera os dados
-        WebElement cartaoNumero = driver.findElement(By.cssSelector(".cartaoNumero"));
-        cartaoNumero.clear();
-        cartaoNumero.sendKeys("5555555555554444");
-        WebElement cartaoBandeira = driver.findElement(By.cssSelector(".cartaoBandeira"));
-        cartaoBandeira.sendKeys("Elo");
-        WebElement cartaoNome = driver.findElement(By.cssSelector(".nomeCartao"));
-        cartaoNome.clear();
-        cartaoNome.sendKeys("JOAO ALTERADO");
+        //primeiro cartão
+        List<WebElement> cartoes = driver.findElements(By.className("cartao"));
+        WebElement primeiroCartao = cartoes.get(0);
+        primeiroCartao.findElement(By.cssSelector(".cartaoNumero")).clear();
+        primeiroCartao.findElement(By.cssSelector(".cartaoNumero")).sendKeys("5555555555554444");
+        new Select(primeiroCartao.findElement(By.cssSelector(".cartaoBandeira"))).selectByVisibleText("Elo");
+        primeiroCartao.findElement(By.cssSelector(".nomeCartao")).clear();
+        primeiroCartao.findElement(By.cssSelector(".nomeCartao")).sendKeys("JOAO ALTERADO");
+        primeiroCartao.findElement(By.cssSelector(".cartaoValidade")).clear();
+        primeiroCartao.findElement(By.cssSelector(".cartaoValidade")).sendKeys("12/28");
+        primeiroCartao.findElement(By.cssSelector(".cartaoCVV")).clear();
+        primeiroCartao.findElement(By.cssSelector(".cartaoCVV")).sendKeys("123");
+        Thread.sleep(1000);
+
+        //adicionar segundo cartao
+        WebElement btnAdicionarCartao = wait.until(ExpectedConditions.elementToBeClickable(
+                By.xpath("//button[contains(text(),'Adicionar Cartão')]")));
+        btnAdicionarCartao.click();
+        Thread.sleep(1000);
+
+        //segundo cartão
+        cartoes = driver.findElements(By.className("cartao"));
+        WebElement segundoCartao = cartoes.get(1);
+        segundoCartao.findElement(By.cssSelector(".cartaoNumero")).sendKeys("4111111111111111");
+        new Select(segundoCartao.findElement(By.cssSelector(".cartaoBandeira"))).selectByVisibleText("Visa");
+        segundoCartao.findElement(By.cssSelector(".nomeCartao")).sendKeys("CARTAO SECUNDARIO");
+        segundoCartao.findElement(By.cssSelector(".cartaoValidade")).sendKeys("11/29");
+        segundoCartao.findElement(By.cssSelector(".cartaoCVV")).sendKeys("456");
         Thread.sleep(1000);
 
         //salvar cartões
-        WebElement btnSalvar = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//button[contains(text(),'Salvar Alterações')]")));
+        WebElement btnSalvar = wait.until(ExpectedConditions.elementToBeClickable
+                (By.xpath("//button[contains(text(),'Salvar Alterações')]")));
         btnSalvar.click();
         Thread.sleep(2000);
 
@@ -246,7 +279,8 @@ public class ClienteUITeste {
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
 
         //clica no botão alterar senha
-        WebElement btnAlterarSenha = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//button[contains(text(),'ALTERAR SENHA')]")));
+        WebElement btnAlterarSenha = wait.until(ExpectedConditions.elementToBeClickable
+                (By.xpath("//button[contains(text(),'ALTERAR SENHA')]")));
         btnAlterarSenha.click();
         Thread.sleep(2000);
 
@@ -262,7 +296,8 @@ public class ClienteUITeste {
         Thread.sleep(2000);
 
         //salvar senha
-        WebElement btnSalvar = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//button[contains(text(),'Alterar Senha')]")));
+        WebElement btnSalvar = wait.until(ExpectedConditions.elementToBeClickable
+                (By.xpath("//button[contains(text(),'Alterar Senha')]")));
         btnSalvar.click();
         Thread.sleep(2000);
 
@@ -285,24 +320,29 @@ public class ClienteUITeste {
         driver.get("http://localhost:8080/clientes_lista");
 
         //seleciona CPF
-        WebElement filtroSelect = wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("select")));
+        WebElement filtroSelect = wait.until(ExpectedConditions.elementToBeClickable
+                (By.cssSelector("select")));
         filtroSelect.click();
-        WebElement opcaoCpf = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//option[contains(text(),'CPF')]")));
+        WebElement opcaoCpf = wait.until(ExpectedConditions.elementToBeClickable
+                (By.xpath("//option[contains(text(),'CPF')]")));
         opcaoCpf.click();
         Thread.sleep(1000);
 
         //insere CPF
-        WebElement inputCPF = wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("input[placeholder='Digite sua busca']")));
+        WebElement inputCPF = wait.until(ExpectedConditions.presenceOfElementLocated
+                (By.cssSelector("input[placeholder='Digite sua busca']")));
         inputCPF.sendKeys("14185296351");
         Thread.sleep(1000);
 
         //clica no botão buscar
-        WebElement btnBuscar = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//button[contains(text(),'Buscar')]")));
+        WebElement btnBuscar = wait.until(ExpectedConditions.elementToBeClickable
+                (By.xpath("//button[contains(text(),'Buscar')]")));
         btnBuscar.click();
         Thread.sleep(1000);
 
         //clica no botão ativar/desativar
-        WebElement btnEditar = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//button[contains(text(),'Ativar/Desativar')]")));
+        WebElement btnEditar = wait.until(ExpectedConditions.elementToBeClickable
+                (By.xpath("//button[contains(text(),'Ativar/Desativar')]")));
         btnEditar.click();
         Thread.sleep(2000);
 
@@ -334,24 +374,29 @@ public class ClienteUITeste {
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
 
         //seleciona CPF
-        WebElement filtroSelect1 = wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("select")));
+        WebElement filtroSelect1 = wait.until(ExpectedConditions.elementToBeClickable
+                (By.cssSelector("select")));
         filtroSelect1.click();
-        WebElement opcaoCpf1 = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//option[contains(text(),'CPF')]")));
+        WebElement opcaoCpf1 = wait.until(ExpectedConditions.elementToBeClickable
+                (By.xpath("//option[contains(text(),'CPF')]")));
         opcaoCpf1.click();
         Thread.sleep(1000);
 
         //insere CPF
-        WebElement inputCPF1 = wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("input[placeholder='Digite sua busca']")));
+        WebElement inputCPF1 = wait.until(ExpectedConditions.presenceOfElementLocated
+                (By.cssSelector("input[placeholder='Digite sua busca']")));
         inputCPF1.sendKeys("14185296351");
         Thread.sleep(1000);
 
         //clica no botão buscar
-        WebElement btnBuscar1 = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//button[contains(text(),'Buscar')]")));
+        WebElement btnBuscar1 = wait.until(ExpectedConditions.elementToBeClickable
+                (By.xpath("//button[contains(text(),'Buscar')]")));
         btnBuscar1.click();
         Thread.sleep(1000);
 
         //clica no botão excluir
-        WebElement btnExcluir = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//button[contains(text(),'Excluir')]")));
+        WebElement btnExcluir = wait.until(ExpectedConditions.elementToBeClickable
+                (By.xpath("//button[contains(text(),'Excluir')]")));
         btnExcluir.click();
         Thread.sleep(2000);
 

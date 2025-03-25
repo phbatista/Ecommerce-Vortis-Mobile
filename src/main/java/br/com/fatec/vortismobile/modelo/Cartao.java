@@ -2,6 +2,10 @@ package br.com.fatec.vortismobile.modelo;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
+import org.hibernate.annotations.CreationTimestamp;
+import java.time.LocalDateTime;
+import org.hibernate.annotations.CreationTimestamp;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "tb_cartao")
@@ -29,6 +33,10 @@ public class Cartao {
 
     @Column(name = "principal", nullable = false)
     private boolean cartaoPrincipal;
+
+    @Column(name = "insert_date", updatable = false)
+    @CreationTimestamp
+    private LocalDateTime insertDate;
 
     @ManyToOne
     @JoinColumn(name = "id_cliente", nullable = false)
@@ -100,5 +108,9 @@ public class Cartao {
 
     public void setCliente(Cliente cliente) {
         this.cliente = cliente;
+    }
+
+    public LocalDateTime getInsertDate() {
+        return insertDate;
     }
 }

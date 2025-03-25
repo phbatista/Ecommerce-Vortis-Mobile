@@ -4,6 +4,9 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.time.LocalDateTime;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 @Entity
 @Table(name = "tb_cliente")
@@ -37,6 +40,14 @@ public class Cliente {
 
     @Column(name = "status", unique = true, nullable = false)
     private String status;
+
+    @Column(name = "insert_date", updatable = false)
+    @CreationTimestamp
+    private LocalDateTime insertDate;
+
+    @Column(name = "update_date")
+    @UpdateTimestamp
+    private LocalDateTime updateDate;
 
     @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
@@ -144,5 +155,13 @@ public class Cliente {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public LocalDateTime getInsertDate() {
+        return insertDate;
+    }
+
+    public LocalDateTime getUpdateDate() {
+        return updateDate;
     }
 }

@@ -2,13 +2,19 @@ document.addEventListener("DOMContentLoaded", function () {
     document.getElementById("clienteForm").addEventListener("submit", async function (event) {
         event.preventDefault();
 
+        const senha = document.getElementById("senha").value;
+        if (!validarSenha(senha)) {
+            alert("A senha deve ter no mínimo 8 caracteres, incluindo letras maiúsculas, minúsculas e caracteres especiais.");
+            return;
+        }
+
         let cliente = {
             nome: document.getElementById("nome").value,
             dataNascimento: document.getElementById("dataNascimento").value,
             cpf: document.getElementById("cpf").value,
             genero: document.getElementById("genero").value,
             email: document.getElementById("email").value,
-            senha: document.getElementById("senha").value,
+            senha: senha,
             status: document.getElementById("status").value,
             telefone: {
                 tipo: document.getElementById("tipoTelefone").value,
@@ -56,6 +62,10 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 });
 
+function validarSenha(senha) {
+    const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[\W_]).{8,}$/;
+    return regex.test(senha);
+}
 
 function capturarEndereco(tipo) {
     return {

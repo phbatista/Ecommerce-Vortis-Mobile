@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cadastro de Produtos - Vortis Mobile</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <div class="container">
+    <a class="navbar-brand fw-bold" href="../catalogo/catalogo.html">Vortis Mobile</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item"><a class="nav-link" href="../carrinho/carrinho.html">Carrinho</a></li>
+        <li class="nav-item"><a class="nav-link" href="../pedidos/pedidos.html">Pedidos</a></li>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle"
+             href="#" role="button"
+             data-bs-toggle="dropdown">Admin</a>
+          <ul class="dropdown-menu dropdown-menu-dark">
+            <li><a class="dropdown-item" href="../clientes/clientes_lista.html">Clientes</a></li>
+            <li><a class="dropdown-item" href="../produtos/produtos_lista.html">Produtos</a></li>
+            <li><a class="dropdown-item" href="../trocas/trocas.html">Trocas</a></li>
+            <li><a class="dropdown-item" href="../cupons/cupons.html">Cupons</a></li>
+            <li><a class="dropdown-item" href="../dashboard/dashboard.html">Dashboard</a></li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<div class="container mt-5">
+  <h2 class="mb-4">Cadastro de Smartphone</h2>
+  <form id="formProduto">
+    <div class="row">
+    <div class="col-md-3 mb-3">
+      <label class="form-label">Nome</label>
+      <input type="text" class="form-control" required>
+    </div>
+      <div class="col-md-3 mb-3">
+      <label class="form-label">Disponibilidade (Ano)</label>
+      <input type="number" class="form-control" required>
+    </div>
+      <div class="col-md-3 mb-3">
+      <label class="form-label">Chipset</label>
+        <input type="text" class="form-control" required>
+      </div>
+      <div class="col-md-3 mb-3">
+        <label class="form-label">Sistema Operacional</label>
+        <input type="text" class="form-control" required>
+      </div>
+      <div class="col-md-3 mb-3">
+        <label class="form-label">Bateria (mAh)</label>
+        <input type="text" class="form-control" required>
+      </div>
+      <div class="col-md-3 mb-3">
+        <label class="form-label">Resolução Câmera</label>
+        <input type="text" class="form-control" required>
+      </div>
+      <div class="col-md-3 mb-3">
+        <label class="form-label">GPU</label>
+        <input type="text" class="form-control" required>
+      </div>
+      <div class="col-md-3 mb-3">
+        <label class="form-label">Tipo de Tela</label>
+        <input type="text" class="form-control" required>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-3 mb-3">
+        <label class="form-label">Tamanho da Tela (pol)</label>
+        <input type="number" class="form-control">
+      </div>
+      <div class="col-md-3 mb-3">
+        <label class="form-label">Peso (g)</label>
+        <input type="number" class="form-control" required>
+      </div>
+      <div class="col-md-2 mb-3">
+        <label class="form-label">Altura (cm)</label>
+        <input type="number" class="form-control" required>
+      </div>
+      <div class="col-md-2 mb-3">
+        <label class="form-label">Largura (cm)</label>
+        <input type="number" class="form-control" required>
+      </div>
+      <div class="col-md-2 mb-3">
+        <label class="form-label">Profundidade (cm)</label>
+        <input type="number" class="form-control" required>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-4 mb-3">
+        <label class="form-label">Memória RAM (GB)</label>
+        <select class="form-select" required>
+          <option value="">Selecione</option>
+          <option value="4gb">4 GB</option>
+          <option value="6gb">6 GB</option>
+          <option value="8gb">8 GB</option>
+          <option value="12gb">12 GB</option>
+        </select>
+      </div>
+      <div class="col-md-4 mb-3">
+        <label class="form-label">Armazenamento (GB)</label>
+        <select class="form-select" required>
+          <option value="">Selecione</option>
+          <option value="64gb">64 GB</option>
+          <option value="128gb">128 GB</option>
+          <option value="256gb">256 GB</option>
+          <option value="512gb">512 GB</option>
+        </select>
+      </div>
+      <div class="col-md-4 mb-3">
+        <label class="form-label">Código de Barras</label>
+        <input type="text" class="form-control" required>
+      </div>
+    </div>
+
+
+    <div class="mb-3">
+      <label class="form-label fw-bold">Categorias:</label>
+      <div class="row">
+        <div class="col-md-3">
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" value="Premium" id="categoria1">
+            <label class="form-check-label" for="categoria1">Premium</label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" value="Intermediário" id="categoria2">
+            <label class="form-check-label" for="categoria2">Intermediário</label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" value="Entrada" id="categoria3">
+            <label class="form-check-label" for="categoria3">Entrada</label>
+          </div>
+        </div>
+
+        <div class="col-md-3">
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" value="5G" id="categoria4">
+            <label class="form-check-label" for="categoria4">5G</label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" value="Dual Chip" id="categoria5">
+            <label class="form-check-label" for="categoria5">Dual Chip</label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" value="Resistente à água" id="categoria6">
+            <label class="form-check-label" for="categoria6">Resistente à água</label>
+          </div>
+        </div>
+
+        <div class="col-md-3">
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" value="Câmera avançada" id="categoria7">
+            <label class="form-check-label" for="categoria7">Câmera avançada</label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" value="Bateria duradoura" id="categoria8">
+            <label class="form-check-label" for="categoria8">Bateria duradoura</label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" value="4G" id="categoria9">
+            <label class="form-check-label" for="categoria9">4G</label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <div class="row">
+      <div class="col-md-3 mb-3">
+        <label class="form-label">Fabricante</label>
+        <select class="form-select" required>
+          <option value="">Selecione</option>
+          <option value="china">China</option>
+          <option value="indonesia">Indonésia</option>
+          <option value="malasia">Malásia</option>
+          <option value="vietna">Vietnã</option>
+        </select>
+      </div>
+      <div class="col-md-3 mb-3">
+        <label class="form-label">Grupo de Precificação</label>
+        <select class="form-select" required>
+          <option value="">Selecione</option>
+          <option value="padrao">Padrão</option>
+          <option value="premium">Premium</option>
+          <option value="intermediario">Intermediário</option>
+        </select>
+      </div>
+      <div class="col-md-3 mb-3">
+        <label class="form-label">Preço de Custo (R$)</label>
+        <input type="number" class="form-control" step="0.01" required>
+      </div>
+      <div class="col-md-3 mb-3">
+        <label class="form-label">Preço de Venda (R$)</label>
+        <input type="number" class="form-control" step="0.01" required>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-3 mb-3">
+        <label class="form-label">Status</label>
+        <select class="form-select" required>
+          <option value="ativo">Ativo</option>
+          <option value="inativo">Inativo</option>
+        </select>
+      </div>
+      <div class="col-md-3 mb-3">
+        <label class="form-label">Motivo</label>
+        <select class="form-select" required>
+          <option value="selecione">Selecione</option>
+          <option value="fora_de_mercado">Fora de Mercado</option>
+          <option value="sem_estoque">Sem Estoque</option>
+        </select>
+      </div>
+      <div class="col-md-6 mb-3">
+        <label class="form-label">Justificativa</label>
+        <input type="text" class="form-control" required>
+      </div>
+    </div>
+
+    <button type="submit" class="btn btn-success">Cadastrar Produto</button>
+    <a href="produtos_lista.html" class="btn btn-secondary">Cancelar</a>
+
+  </form>
+</div>
+
+<script>
+  document.getElementById("formProduto").addEventListener("submit", function(event) {
+    event.preventDefault(); alert("Produto cadastrado com sucesso!"); this.reset(); });
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>

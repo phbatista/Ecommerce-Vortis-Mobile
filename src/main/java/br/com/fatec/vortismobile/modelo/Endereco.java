@@ -2,6 +2,8 @@ package br.com.fatec.vortismobile.modelo;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
+import org.hibernate.annotations.CreationTimestamp;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "tb_endereco")
@@ -41,6 +43,10 @@ public class Endereco {
 
     @Column(name = "pais", length = 50, nullable = false)
     private String pais;
+
+    @Column(name = "insert_date", updatable = false)
+    @CreationTimestamp
+    private LocalDateTime insertDate;
 
     @ManyToOne
     @JoinColumn(name = "id_cliente", nullable = false)
@@ -147,5 +153,9 @@ public class Endereco {
 
     public void setTipoResidencia(String tipoResidencia) {
         this.tipoResidencia = tipoResidencia;
+    }
+
+    public LocalDateTime getInsertDate() {
+        return insertDate;
     }
 }
