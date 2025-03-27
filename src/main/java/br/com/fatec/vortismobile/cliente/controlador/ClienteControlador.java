@@ -1,9 +1,9 @@
-package br.com.fatec.vortismobile.controlador;
+package br.com.fatec.vortismobile.cliente.controlador;
 
-import br.com.fatec.vortismobile.modelo.Cartao;
-import br.com.fatec.vortismobile.modelo.Cliente;
-import br.com.fatec.vortismobile.modelo.Endereco;
-import br.com.fatec.vortismobile.servico.ClienteServico;
+import br.com.fatec.vortismobile.cliente.modelo.Cartao;
+import br.com.fatec.vortismobile.cliente.modelo.Cliente;
+import br.com.fatec.vortismobile.cliente.modelo.Endereco;
+import br.com.fatec.vortismobile.cliente.servico.ClienteServico;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

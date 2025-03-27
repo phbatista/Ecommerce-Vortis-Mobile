@@ -1,9 +1,9 @@
-package br.com.fatec.vortismobile.servico;
+package br.com.fatec.vortismobile.cliente.servico;
 
-import br.com.fatec.vortismobile.modelo.Cartao;
-import br.com.fatec.vortismobile.modelo.Cliente;
-import br.com.fatec.vortismobile.modelo.Endereco;
-import br.com.fatec.vortismobile.repositorio.ClienteRepositorio;
+import br.com.fatec.vortismobile.cliente.modelo.Cartao;
+import br.com.fatec.vortismobile.cliente.modelo.Cliente;
+import br.com.fatec.vortismobile.cliente.modelo.Endereco;
+import br.com.fatec.vortismobile.cliente.repositorio.ClienteRepositorio;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;

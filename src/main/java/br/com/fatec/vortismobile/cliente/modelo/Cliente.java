@@ -1,4 +1,4 @@
-package br.com.fatec.vortismobile.modelo;
+package br.com.fatec.vortismobile.cliente.modelo;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;

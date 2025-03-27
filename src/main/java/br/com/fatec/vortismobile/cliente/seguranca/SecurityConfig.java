@@ -1,4 +1,4 @@
-package br.com.fatec.vortismobile.seguranca;
+package br.com.fatec.vortismobile.cliente.seguranca;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

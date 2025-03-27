@@ -1,4 +1,4 @@
-package br.com.fatec.vortismobile.modelo;
+package br.com.fatec.vortismobile.cliente.modelo;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;

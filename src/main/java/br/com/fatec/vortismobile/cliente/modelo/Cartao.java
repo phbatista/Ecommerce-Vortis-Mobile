@@ -1,9 +1,7 @@
-package br.com.fatec.vortismobile.modelo;
+package br.com.fatec.vortismobile.cliente.modelo;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
-import org.hibernate.annotations.CreationTimestamp;
-import java.time.LocalDateTime;
 import org.hibernate.annotations.CreationTimestamp;
 import java.time.LocalDateTime;
 

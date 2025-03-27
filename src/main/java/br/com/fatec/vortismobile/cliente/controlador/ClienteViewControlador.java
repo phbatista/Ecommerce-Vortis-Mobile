@@ -1,4 +1,4 @@
-package br.com.fatec.vortismobile.controlador;
+package br.com.fatec.vortismobile.cliente.controlador;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
