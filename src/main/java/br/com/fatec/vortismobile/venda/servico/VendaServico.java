@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -35,11 +36,10 @@ public class VendaServico {
     @Autowired
     private ItemVendaRepositorio itemVendaRepositorio;
 
-    public void criarVenda(VendaDTO dto) {
+    public Long criarVenda(VendaDTO dto) {
         Cliente cliente = clienteRepositorio.findById(dto.getIdCliente())
                 .orElseThrow(() -> new RuntimeException("Cliente não encontrado"));
 
-        // filtra apenas endereço de entrega
         Optional<Endereco> enderecoEntregaOpt = cliente.getEnderecos().stream()
                 .filter(e -> "Entrega".equalsIgnoreCase(e.getTipoEndereco()))
                 .filter(e -> e.getId().equals(dto.getIdEnderecoEntrega()))
@@ -57,8 +57,7 @@ public class VendaServico {
         Venda venda = new Venda();
         venda.setData(LocalDateTime.now());
         venda.setFrete(frete);
-        venda = vendaRepositorio.save(venda);
-        vendaRepositorio.flush();
+        venda = vendaRepositorio.save(venda); // salva e recupera com ID
 
         for (VendaDTO.ItemDTO itemDTO : dto.getItens()) {
             Produto produto = produtoRepositorio.findById(itemDTO.getIdProduto())
@@ -68,9 +67,11 @@ public class VendaServico {
             item.setProduto(produto);
             item.setQuantidade(itemDTO.getQuantidade());
             item.setPrecoUnitario(produto.getPrecoVenda());
-            item.setVenda(venda); // agora o ID está garantido
+            item.setVenda(venda);
 
-            itemVendaRepositorio.save(item); // salva individualmente
+            itemVendaRepositorio.save(item);
         }
+
+        return venda.getId();
     }
 }

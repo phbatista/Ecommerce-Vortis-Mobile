@@ -15,8 +15,8 @@ public class VendaControlador {
     private VendaServico vendaServico;
 
     @PostMapping
-    public ResponseEntity<?> criarVenda(@RequestBody VendaDTO dto) {
-        vendaServico.criarVenda(dto);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<Long> criarVenda(@RequestBody VendaDTO dto) {
+        Long idVenda = vendaServico.criarVenda(dto); // retorna o ID
+        return ResponseEntity.ok(idVenda); // envia o ID de volta pro front
     }
 }

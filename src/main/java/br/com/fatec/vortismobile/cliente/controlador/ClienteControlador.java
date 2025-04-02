@@ -1,8 +1,10 @@
 package br.com.fatec.vortismobile.cliente.controlador;
 
+import br.com.fatec.vortismobile.cliente.dto.LoginDTO;
 import br.com.fatec.vortismobile.cliente.modelo.Cartao;
 import br.com.fatec.vortismobile.cliente.modelo.Cliente;
 import br.com.fatec.vortismobile.cliente.modelo.Endereco;
+import br.com.fatec.vortismobile.cliente.repositorio.ClienteRepositorio;
 import br.com.fatec.vortismobile.cliente.servico.ClienteServico;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,6 +20,9 @@ import java.util.Optional;
 @RequestMapping("/api/clientes")
 @CrossOrigin(origins = "*")
 public class ClienteControlador {
+
+    @Autowired
+    private ClienteRepositorio clienteRepositorio;
 
     @Autowired
     private ClienteServico clienteServico;
@@ -185,4 +190,53 @@ public class ClienteControlador {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Cliente não encontrado.");
         }
     }
+
+    //login cliente
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody LoginDTO login) {
+        Optional<Cliente> clienteOpt = clienteRepositorio.findByEmail(login.getEmail());
+
+        if (clienteOpt.isPresent()) {
+            Cliente cliente = clienteOpt.get();
+
+            if (passwordEncoder.matches(login.getSenha(), cliente.getSenha())) {
+                return ResponseEntity.ok(cliente);
+            } else {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Senha inválida");
+            }
+        }
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("E-mail não encontrado");
+    }
+
+    //novo endereço no carrinho
+    @PostMapping("/{id}/enderecos")
+    public ResponseEntity<?> adicionarEndereco(@PathVariable Long id, @RequestBody Endereco novoEndereco) {
+        Optional<Cliente> clienteOpt = clienteServico.buscarPorId(id);
+        if (clienteOpt.isPresent()) {
+            Cliente cliente = clienteOpt.get();
+            novoEndereco.setCliente(cliente);
+            cliente.getEnderecos().add(novoEndereco);
+            clienteServico.salvar(cliente);
+            return ResponseEntity.ok(novoEndereco);
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Cliente não encontrado");
+        }
+    }
+
+    //novo cartao no carrinho
+    @PostMapping("/{id}/cartoes")
+    public ResponseEntity<?> adicionarCartao(@PathVariable Long id, @RequestBody Cartao novoCartao) {
+        Optional<Cliente> clienteOpt = clienteServico.buscarPorId(id);
+        if (clienteOpt.isPresent()) {
+            Cliente cliente = clienteOpt.get();
+            novoCartao.setCliente(cliente);
+            cliente.getCartoes().add(novoCartao);
+            clienteServico.salvar(cliente);
+            return ResponseEntity.ok(novoCartao);
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Cliente não encontrado");
+        }
+    }
+
 }

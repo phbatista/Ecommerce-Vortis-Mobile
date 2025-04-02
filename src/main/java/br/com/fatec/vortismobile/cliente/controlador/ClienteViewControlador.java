@@ -35,4 +35,7 @@ public class ClienteViewControlador {
     @GetMapping("clientes_editar_senha")
     public String clientesEditarSenhaPage() {return "clientes/clientes_editar_senha";}
 
+    @GetMapping("clientes_login")
+    public String login() {return "login/login";}
+
 }
