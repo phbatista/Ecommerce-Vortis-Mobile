@@ -1,3 +1,4 @@
+<body>
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container">
         <a class="navbar-brand fw-bold" href="catalogo">Vortis Mobile</a>
@@ -6,9 +7,12 @@
             <span class="navbar-toggler-icon"></span>
         </button>
 
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto" id="menuUsuario">
+                <!-- Itens serão inseridos dinamicamente -->
+            </ul>
+
             <ul class="navbar-nav ms-3">
-                <li class="collapse navbar-collapse" id="navbarNav">
-                    <ul class="navbar-nav ms-auto" id="menuUsuario"></ul>
                 <li class="nav-item"><a class="nav-link" href="carrinho">Carrinho</a></li>
                 <li class="nav-item"><a class="nav-link" href="../pedidos/pedidos.html">Pedidos</a></li>
                 <li class="nav-item dropdown">
@@ -24,6 +28,45 @@
                     </ul>
                 </li>
             </ul>
-
+        </div>
     </div>
 </nav>
+
+<!-- Script de login dinâmico -->
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const menuUsuario = document.getElementById("menuUsuario");
+        const idCliente = sessionStorage.getItem("idCliente");
+        const nomeCliente = sessionStorage.getItem("nomeCliente");
+
+        console.log("JS RODANDO");
+        console.log("idCliente:", idCliente);
+        console.log("nomeCliente:", nomeCliente);
+        console.log("menuUsuario:", menuUsuario);
+
+        if (menuUsuario) {
+            if (idCliente && nomeCliente) {
+                menuUsuario.innerHTML = `
+                  <li class="nav-item">
+                      <span class="nav-link text-white">Olá, ${nomeCliente}</span>
+                  </li>
+                  <li class="nav-item">
+                      <a class="nav-link" href="#" onclick="logout()">Sair</a>
+                  </li>
+              `;
+            } else {
+                menuUsuario.innerHTML = `
+                  <li class="nav-item">
+                      <a class="nav-link" href="/clientes_login">Fazer Login</a>
+                  </li>
+              `;
+            }
+        }
+    });
+
+    function logout() {
+        sessionStorage.clear();
+        window.location.href = "/clientes_login";
+    }
+</script>
+</body>

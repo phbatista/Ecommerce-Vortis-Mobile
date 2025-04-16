@@ -12,126 +12,76 @@
 <div id="navbar-placeholder"></div>
 
 <div class="container mt-4">
-    <h3 class="mb-4">Pedidos de Troca</h3>
-    <div class="accordion" id="accordionPedidos">
-        <table class="table mb-0 table-bordered text-center">
-            <thead class="table-dark">
-            <tr>
-                <th>#</th>
-                <th>Pedido</th>
-                <th>Data</th>
-                <th>Valor</th>
-                <th>Status</th>
-                <th>Ações</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr>
-                <td style="width: 50px;">
-                    <button class="btn" data-bs-toggle="collapse" data-bs-target="#troca1" aria-expanded="false" aria-controls="troca1">
-                        <span class="accordion-button collapsed" style="padding: 0; border: none;"></span>
-                    </button>
-                </td>
-                <td>12345</td>
-                <td>24/03/2025 21:15</td>
-                <td>R$ 5.000,00</td>
-                <td>EM TROCA</td>
-                <td>
-                    Autorizar Troca?
-                    <button class="btn btn-dark btn-sm ms-2">Sim</button>
-                    <button class="btn btn-dark btn-sm ms-1">Não</button>
-                </td>
+    <h4>Solicitar Troca ou Devolução</h4>
 
-            <tr class="collapse" id="troca1" data-bs-parent="#accordionPedidos">
-                <td colspan="6" class="bg-light text-start">
-                    <div class="row">
+    <form id="formTrocaDevolucao">
+        <div class="mb-3">
+            <label for="idPedido" class="form-label">ID do Pedido</label>
+            <input type="number" class="form-control" id="idPedido" required>
+        </div>
 
-                        <div class="col-md-6">
-                            <p><strong>Produto:</strong> Vortis X Senior</p>
-                            <p><strong>Quantidade:</strong> 1</p>
-                            <p><strong>Valor Unitário:</strong> R$ 2.000,00</p>
-                            <p><hr></p>
-                            <p><strong>Produto:</strong> Vortis Z Gamer</p>
-                            <p><strong>Quantidade:</strong> 2</p>
-                            <p><strong>Valor Unitário:</strong> R$ 3.000,00</p>
-                            <p><hr></p>
-                            <p><strong>Valor Total:</strong> R$ 8.000,00</p>
-                        </div>
+        <div class="mb-3">
+            <label for="idProduto" class="form-label">ID do Produto</label>
+            <input type="number" class="form-control" id="idProduto" required>
+        </div>
 
-                        <div class="col-md-6">
-                            <p><strong>Entrega:</strong> Avenina Paulista, 123 - Jardins, São Paulo-SP, 05001-123</p>
-                            <p><strong>Pagamento:</strong> Mastercard 4558</p>
-                            <p><strong>Cupom:</strong> BEMVINDO1000</p>
-                            <p><hr></p>
-                            <p><strong>Valor Produtos:</strong> R$ 8.000,00</p>
-                            <p><strong>Valor Frete:</strong> R$ 50,00 (5 dias úteis)</p>
-                            <p><strong>Desconto Cupom:</strong> -R$ 1.000,00</p>
-                            <p><hr></p>
-                            <p><strong>Valor Final:</strong> R$ 7.050,00</p>
-                        </div>
+        <div class="mb-3">
+            <label for="quantidade" class="form-label">Quantidade</label>
+            <input type="number" class="form-control" id="quantidade" min="1" required>
+        </div>
 
-                    </div>
-                </td>
-            </tr>
-            </tbody>
-            <tbody>
-            <tr>
-                <td style="width: 50px;">
-                    <button class="btn" data-bs-toggle="collapse" data-bs-target="#troca2" aria-expanded="false" aria-controls="troca1">
-                        <span class="accordion-button collapsed" style="padding: 0; border: none;"></span>
-                    </button>
-                </td>
-                <td>12345</td>
-                <td>24/03/2025 21:15</td>
-                <td>R$ 5.000,00</td>
-                <td>EM TROCA</td>
-                <td>
-                    Autorizar Troca?
-                    <button class="btn btn-dark btn-sm ms-2">Sim</button>
-                    <button class="btn btn-dark btn-sm ms-1">Não</button>
-                </td>
+        <div class="mb-3">
+            <label for="motivo" class="form-label">Motivo</label>
+            <textarea class="form-control" id="motivo" rows="3" required></textarea>
+        </div>
 
-            <tr class="collapse" id="troca2" data-bs-parent="#accordionPedidos">
-                <td colspan="6" class="bg-light text-start">
-                    <div class="row">
+        <div class="mb-3">
+            <label class="form-label">Tipo de Solicitação</label>
+            <select class="form-select" id="tipo" required>
+                <option value="">Selecione</option>
+                <option value="TROCA">Troca</option>
+                <option value="DEVOLUCAO">Devolução</option>
+            </select>
+        </div>
 
-                        <div class="col-md-6">
-                            <p><strong>Produto:</strong> Vortis X Senior</p>
-                            <p><strong>Quantidade:</strong> 1</p>
-                            <p><strong>Valor Unitário:</strong> R$ 2.000,00</p>
-                            <p><hr></p>
-                            <p><strong>Produto:</strong> Vortis Z Gamer</p>
-                            <p><strong>Quantidade:</strong> 2</p>
-                            <p><strong>Valor Unitário:</strong> R$ 3.000,00</p>
-                            <p><hr></p>
-                            <p><strong>Valor Total:</strong> R$ 8.000,00</p>
-                        </div>
-
-                        <div class="col-md-6">
-                            <p><strong>Entrega:</strong> Avenina Paulista, 123 - Jardins, São Paulo-SP, 05001-123</p>
-                            <p><strong>Pagamento:</strong> Mastercard 4558</p>
-                            <p><strong>Cupom:</strong> BEMVINDO1000</p>
-                            <p><hr></p>
-                            <p><strong>Valor Produtos:</strong> R$ 8.000,00</p>
-                            <p><strong>Valor Frete:</strong> R$ 50,00 (5 dias úteis)</p>
-                            <p><strong>Desconto Cupom:</strong> -R$ 1.000,00</p>
-                            <p><hr></p>
-                            <p><strong>Valor Final:</strong> R$ 7.050,00</p>
-                        </div>
-
-                    </div>
-                </td>
-            </tr>
-            </tbody>
-        </table>
-    </div>
+        <button type="submit" class="btn btn-primary">Enviar Solicitação</button>
+    </form>
 </div>
+
 <script>
-    fetch('../navbar/navbar.html')
-        .then(res => res.text())
-        .then(data => {
-            document.getElementById('navbar-placeholder').innerHTML = data;
-        });
+    document.getElementById("formTrocaDevolucao").addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const dto = {
+            idPedido: parseInt(document.getElementById("idPedido").value),
+            idProduto: parseInt(document.getElementById("idProduto").value),
+            quantidade: parseInt(document.getElementById("quantidade").value),
+            motivo: document.getElementById("motivo").value,
+            tipo: document.getElementById("tipo").value
+        };
+
+        try {
+            const resp = await fetch("http://localhost:8080/api/vendas/solicitar-troca-ou-devolucao", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(dto)
+            });
+
+            if (resp.ok) {
+                alert("Solicitação enviada com sucesso!");
+                document.getElementById("formTrocaDevolucao").reset();
+            } else {
+                const erro = await resp.text();
+                alert("Erro ao enviar solicitação: " + erro);
+            }
+        } catch (err) {
+            console.error("Erro na solicitação:", err);
+            alert("Erro na comunicação com o servidor.");
+        }
+    });
 </script>
+
+
+<script src="/js/navbar/navbar.js"></script>
 </body>
 </html>

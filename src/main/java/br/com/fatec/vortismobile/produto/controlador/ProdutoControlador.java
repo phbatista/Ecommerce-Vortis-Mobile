@@ -1,20 +1,14 @@
 package br.com.fatec.vortismobile.produto.controlador;
 
-import br.com.fatec.vortismobile.produto.dto.ProdutoDTO;
+import br.com.fatec.vortismobile.produto.dto.ProdutoComCategoriaDTO;
 import br.com.fatec.vortismobile.produto.modelo.Categoria;
 import br.com.fatec.vortismobile.produto.modelo.Produto;
 import br.com.fatec.vortismobile.produto.repositorio.CategoriaRepositorio;
 import br.com.fatec.vortismobile.produto.repositorio.ProdutoRepositorio;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -90,7 +84,42 @@ public class ProdutoControlador {
     }
 
     @GetMapping
-    public List<Produto> listarProdutos() {
-        return produtoRepositorio.findAll();
+    public List<ProdutoComCategoriaDTO> listarProdutos() {
+        return produtoRepositorio.findAll().stream().map(produto -> {
+            List<String> nomesCategorias = produto.getCategorias().stream()
+                    .map(c -> c.getNome())
+                    .collect(Collectors.toList());
+
+            return new ProdutoComCategoriaDTO(
+                    produto.getId(),
+                    produto.getNome(),
+                    produto.getPrecoVenda(),
+                    produto.getImagem(),
+                    nomesCategorias
+            );
+        }).collect(Collectors.toList());
+    }
+
+    @PutMapping("/{idProduto}/categorias")
+    public ResponseEntity<?> adicionarCategoriasAoProduto(
+            @PathVariable Long idProduto,
+            @RequestBody List<Long> idsCategorias) {
+
+        Produto produto = produtoRepositorio.findById(idProduto)
+                .orElseThrow(() -> new RuntimeException("Produto não encontrado"));
+
+        List<Categoria> categorias = categoriaRepositorio.findAllById(idsCategorias);
+
+        produto.setCategorias(categorias); // substitui as existentes
+        produtoRepositorio.save(produto);
+
+        return ResponseEntity.ok("Categorias atualizadas com sucesso.");
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Produto> buscarPorId(@PathVariable Long id) {
+        return produtoRepositorio.findById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 }

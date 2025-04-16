@@ -15,7 +15,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 if (resp.ok) {
                     const cliente = await resp.json();
+                    console.log("Cliente recebido:", cliente); // ✅ pode deixar pra teste
+
                     sessionStorage.setItem("idCliente", cliente.id);
+                    sessionStorage.setItem("nomeCliente", cliente.nome); // ✅ ESSENCIAL
+
                     window.location.href = "/catalogo";
                 } else {
                     document.getElementById("erroLogin").textContent = "E-mail ou senha inválidos.";

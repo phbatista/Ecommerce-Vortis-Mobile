@@ -1,5 +1,7 @@
 package br.com.fatec.vortismobile.venda.modelo;
 
+import br.com.fatec.vortismobile.cliente.modelo.Cliente;
+import br.com.fatec.vortismobile.cliente.modelo.Endereco;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -14,13 +16,40 @@ public class Venda {
     private Long id;
 
     @Column(name = "data_venda", nullable = false)
-    private LocalDateTime data;
+    private LocalDateTime dataVenda;
 
-    @Column(nullable = false)
-    private Double frete;
+    private double frete;
+
+    @ManyToOne
+    @JoinColumn(name = "cliente_id", nullable = false)
+    private Cliente cliente;
+
+    @ManyToOne
+    @JoinColumn(name = "endereco_entrega_id", nullable = false)
+    private Endereco enderecoEntrega;
 
     @OneToMany(mappedBy = "venda", cascade = CascadeType.ALL)
     private List<ItemVenda> itens;
+
+    @OneToMany(mappedBy = "venda", cascade = CascadeType.ALL)
+    private List<VendaCartao> cartoes;
+
+    @Column(name = "status")
+    private String status;
+
+    @Column(name = "cupom_promocional")
+    private String cupomPromocional;
+
+    @Column(name = "cupom_troca")
+    private String cupomTroca;
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
 
     public Long getId() {
         return id;
@@ -30,20 +59,36 @@ public class Venda {
         this.id = id;
     }
 
-    public LocalDateTime getData() {
-        return data;
+    public LocalDateTime getDataVenda() {
+        return dataVenda;
     }
 
-    public void setData(LocalDateTime data) {
-        this.data = data;
+    public void setDataVenda(LocalDateTime dataVenda) {
+        this.dataVenda = dataVenda;
     }
 
-    public Double getFrete() {
+    public double getFrete() {
         return frete;
     }
 
-    public void setFrete(Double frete) {
+    public void setFrete(double frete) {
         this.frete = frete;
+    }
+
+    public Cliente getCliente() {
+        return cliente;
+    }
+
+    public void setCliente(Cliente cliente) {
+        this.cliente = cliente;
+    }
+
+    public Endereco getEnderecoEntrega() {
+        return enderecoEntrega;
+    }
+
+    public void setEnderecoEntrega(Endereco enderecoEntrega) {
+        this.enderecoEntrega = enderecoEntrega;
     }
 
     public List<ItemVenda> getItens() {
@@ -52,5 +97,29 @@ public class Venda {
 
     public void setItens(List<ItemVenda> itens) {
         this.itens = itens;
+    }
+
+    public List<VendaCartao> getCartoes() {
+        return cartoes;
+    }
+
+    public void setCartoes(List<VendaCartao> cartoes) {
+        this.cartoes = cartoes;
+    }
+
+    public String getCupomPromocional() {
+        return cupomPromocional;
+    }
+
+    public void setCupomPromocional(String cupomPromocional) {
+        this.cupomPromocional = cupomPromocional;
+    }
+
+    public String getCupomTroca() {
+        return cupomTroca;
+    }
+
+    public void setCupomTroca(String cupomTroca) {
+        this.cupomTroca = cupomTroca;
     }
 }

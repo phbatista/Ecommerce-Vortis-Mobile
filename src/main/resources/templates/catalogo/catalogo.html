@@ -13,17 +13,37 @@
 
 <div class="container mt-4">
   <h2 class="mb-4">Catálogo de Produtos</h2>
+  <div class="row mb-4">
+    <div class="col-md-5">
+      <label for="buscaProduto" class="form-label fw-bold">Buscar Produto</label>
+      <input type="text" class="form-control" id="buscaProduto" placeholder="Digite o nome do produto...">
+    </div>
+
+    <div class="col-md-2">
+      <label for="precoMin" class="form-label fw-bold">Preço Mínimo</label>
+      <input type="number" class="form-control" id="precoMin" placeholder="Ex: 1000">
+    </div>
+
+    <div class="col-md-2">
+      <label for="precoMax" class="form-label fw-bold">Preço Máximo</label>
+      <input type="number" class="form-control" id="precoMax" placeholder="Ex: 5000">
+    </div>
+
+    <div class="col-md-2 d-flex align-items-end gap-2">
+      <button class="btn btn-dark w-50" onclick="aplicarFiltro()">Filtrar</button>
+      <button class="btn btn-outline-secondary w-50" onclick="limparFiltros()">Limpar</button>
+    </div>
+
+  </div>
+  <div class="mb-4"><h5>Filtrar por Categoria:</h5>
+    <div id="filtrosCategorias" class="mb-4"></div>
+  </div>
+
   <div class="row" id="catalogoProdutos">
 
   </div>
 </div>
 
-<script>
-  fetch('../navbar/navbar.html')
-          .then(res => res.text())
-          .then(data => {
-            document.getElementById('navbar-placeholder').innerHTML = data;
-          });
-</script>
+<script src="/js/navbar/navbar.js"></script>
 </body>
 </html>

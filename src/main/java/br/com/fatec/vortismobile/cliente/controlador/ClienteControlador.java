@@ -1,5 +1,6 @@
 package br.com.fatec.vortismobile.cliente.controlador;
 
+import br.com.fatec.vortismobile.cliente.dto.ClienteDTO;
 import br.com.fatec.vortismobile.cliente.dto.LoginDTO;
 import br.com.fatec.vortismobile.cliente.modelo.Cartao;
 import br.com.fatec.vortismobile.cliente.modelo.Cliente;
@@ -191,7 +192,6 @@ public class ClienteControlador {
         }
     }
 
-    //login cliente
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginDTO login) {
         Optional<Cliente> clienteOpt = clienteRepositorio.findByEmail(login.getEmail());
@@ -200,7 +200,9 @@ public class ClienteControlador {
             Cliente cliente = clienteOpt.get();
 
             if (passwordEncoder.matches(login.getSenha(), cliente.getSenha())) {
-                return ResponseEntity.ok(cliente);
+                // responde apenas com id e nome
+                ClienteDTO dto = new ClienteDTO(cliente.getId(), cliente.getNome());
+                return ResponseEntity.ok(dto);
             } else {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Senha inválida");
             }

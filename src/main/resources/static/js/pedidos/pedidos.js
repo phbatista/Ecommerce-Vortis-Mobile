@@ -1,50 +1,67 @@
-function gerarLinhaPedido(pedido, index) {
-    const linhaResumo = `
-    <tr>
-      <td><button class="btn btn-sm btn-outline-dark" onclick="toggleDetalhes(${pedido.id})">▼</button></td>
-      <td>${pedido.id}</td>
-      <td>${new Date(pedido.dataVenda).toLocaleString()}</td>
-      <td>R$ ${pedido.total.toFixed(2)}</td>
-      <td>${pedido.status}</td>
-      <td><button class="btn btn-sm btn-primary">Solicitar troca</button></td>
-    </tr>
-  `;
+document.addEventListener("DOMContentLoaded", async () => {
+    const tabela = document.getElementById("tabelaPedidos");
 
-    const linhaDetalhes = `
-    <tr id="detalhes-${pedido.id}" style="display: none;">
-      <td colspan="6">
-        <div class="text-start">
-          ${pedido.itens.map(item => `
-            <div><strong>Produto:</strong> ${item.nome} | Quantidade: ${item.quantidade} | Unitário: R$ ${item.precoUnitario.toFixed(2)}</div>
-          `).join("")}
-          <hr>
-          <div><strong>Entrega:</strong> ${pedido.endereco}</div>
-          <div><strong>Pagamento:</strong> ${pedido.pagamento}</div>
-          <div><strong>Frete:</strong> R$ ${pedido.frete.toFixed(2)}</div>
-          <div><strong>Valor Final:</strong> R$ ${pedido.total.toFixed(2)}</div>
-        </div>
-      </td>
-    </tr>
-  `;
+    try {
+        const resp = await fetch("http://localhost:8080/api/vendas/admin");
+        const pedidos = await resp.json();
 
-    return linhaResumo + linhaDetalhes;
-}
+        if (!pedidos.length) {
+            tabela.innerHTML = `<tr><td colspan="5" class="text-center">Nenhum pedido encontrado.</td></tr>`;
+            return;
+        }
 
-function toggleDetalhes(id) {
-    const linha = document.getElementById(`detalhes-${id}`);
-    linha.style.display = linha.style.display === "none" ? "" : "none";
-}
+        pedidos.forEach(p => {
+            const collapseId = `detalhes-${p.id}`;
 
-async function carregarPedidos() {
-    const idCliente = localStorage.getItem("idCliente");
+            const linha = document.createElement("tr");
+            linha.innerHTML = `
+                <td>
+                    <button class="btn btn-sm btn-outline-dark" type="button" data-bs-toggle="collapse" data-bs-target="#${collapseId}" aria-expanded="false" aria-controls="${collapseId}">
+                        ▼
+                    </button>
+                </td>
+                <td>${p.id}</td>
+                <td>${new Date(p.dataVenda).toLocaleString()}</td>
+                <td>${p.status}</td>
+                <td>
+                    ${p.status === 'ENTREGUE' ? `
+                        <button class="btn btn-sm btn-outline-primary" onclick="abrirFormularioTroca(${p.id})">
+                            Solicitar Troca/Devolução
+                        </button>` : '-'}
+                </td>
+            `;
 
-    const resp = await fetch(`http://localhost:8080/api/clientes/${idCliente}/pedidos`);
-    const pedidos = await resp.json();
+            const detalhes = document.createElement("tr");
+            detalhes.innerHTML = `
+                <td colspan="5" class="p-0 border-0">
+                    <div id="${collapseId}" class="collapse p-3 bg-light">
+                        <p><strong>Produtos:</strong><br>
+                            ${p.produtos.map(i => `- ${i.produtoNome} (Qtd: ${i.quantidade}, R$ ${i.preco.toFixed(2)})`).join("<br>")}
+                        </p>
+                        <p><strong>Endereço:</strong><br>
+                            ${p.endereco}
+                        </p>
+                        <p><strong>Cartões:</strong><br>
+                            ${p.cartoes.map(c => `${c.finalNumero} - R$ ${c.valor.toFixed(2)}`).join("<br>")}
+                        </p>
+                        <p>
+                            <strong>Cupom Promocional:</strong> ${p.cupomPromocional || "-"}<br>
+                            <strong>Cupom de Troca:</strong> ${p.cupomTroca || "-"}
+                        </p>
+                        <p>
+                            <strong>Frete:</strong> R$ ${p.frete.toFixed(2)}<br>
+                            <strong>Total:</strong> <strong>R$ ${p.total.toFixed(2)}</strong>
+                        </p>
+                    </div>
+                </td>
+            `;
 
-    const tbody = document.getElementById("tabelaPedidos");
-    tbody.innerHTML = "";
+            tabela.appendChild(linha);
+            tabela.appendChild(detalhes);
+        });
 
-    pedidos.forEach((p, i) => {
-        tbody.innerHTML += gerarLinhaPedido(p, i);
-    });
-}
+    } catch (err) {
+        console.error("Erro ao carregar pedidos:", err);
+        tabela.innerHTML = `<tr><td colspan="5" class="text-center">Erro ao carregar pedidos.</td></tr>`;
+    }
+});

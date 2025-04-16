@@ -1,10 +1,11 @@
 package br.com.fatec.vortismobile.produto.modelo;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import java.util.List;
 
 @Entity
-@Table(name = "tb_produto_categoria")
+@Table(name = "tb_categoria")
 public class Categoria {
 
     @Id
@@ -14,15 +15,13 @@ public class Categoria {
     private String nome;
 
     @ManyToMany(mappedBy = "categorias")
+    @JsonIgnore
     private List<Produto> produtos;
 
     public Categoria() {}
 
     public Categoria(String nome) {
         this.nome = nome;
-    }
-
-    public Categoria(String cat, Produto produto) {
     }
 
     public Long getId() {

@@ -14,7 +14,12 @@
 <div id="navbar-placeholder"></div>
 
 <div class="container mt-5">
-    <h2 class="mb-4">Carrinho de Compras</h2>
+    <div style="display: flex; justify-content: space-between; align-items: center;" class="mb-4">
+        <h2 class="mb-0">Carrinho de Compras</h2>
+        <div id="contadorCarrinho" style="background: #fff3cd; color: #856404; padding: 8px 12px; border-radius: 8px; font-weight: bold; box-shadow: 0 0 5px rgba(0,0,0,0.1);">
+            Tempo restante: 05:00
+        </div>
+    </div>
 
     <div class="table-responsive mb-4">
         <table class="table table-bordered align-middle text-center">
@@ -32,11 +37,9 @@
     </div>
 
     <div class="mb-3" style="max-width: 400px;">
-        <label for="enderecoEntrega" class="form-label">Endereço de Entrega</label>
+        <h5><label for="enderecoEntrega" class="form-label">Endereço de Entrega</label></h5>
         <select class="form-select" id="enderecoEntrega" required>
-            <option value="">Selecione um endereço</option>
         </select>
-        <button type="button" id="btnCalcularFrete" class="btn btn-success btn-sm mt-2">Calcular Frete</button>
         <button type="button" class="btn btn-sm btn-outline-secondary mt-2" onclick="mostrarFormularioEndereco()">+ Novo Endereço</button>
     </div>
 
@@ -94,12 +97,37 @@
         <button class="btn btn-outline-secondary btn-sm mt-2" onclick="fecharFormularioEndereco()">Cancelar</button>
     </div>
 
-    <div class="mb-3" style="max-width: 400px;">
-        <label for="cartaoSelecionado" class="form-label">Cartão de Crédito</label>
-        <select class="form-select" id="cartaoSelecionado" required>
-            <option value="">Selecione um cartão</option>
-        </select>
-        <button type="button" class="btn btn-sm btn-outline-secondary mt-2" onclick="mostrarFormCartao()">+ Novo Cartão</button>
+    <div class="mb-3" style="max-width: 50%;">
+        <h5><label class="form-label">Forma de Pagamento</label></h5>
+        <div class="row" id="cartoesContainer">
+            <div class="col-md-6">
+                <label>Cartão 1</label>
+                <select class="form-select mb-2" id="cartao1" required>
+                    <option value="">Selecione</option>
+                </select>
+
+                <div id="valorCartao1Container" style="display: none;">
+                    <label>Valor no Cartão 1 (R$)</label>
+                    <input type="number" id="valorCartao1" class="form-control mb-2" min="10" placeholder="Ex: 50.00">
+                </div>
+
+                <button type="button" class="btn btn-outline-secondary btn-sm mb-2" onclick="mostrarFormCartao()">+ Novo Cartão</button>
+            </div>
+
+            <div class="col-md-6" id="cartao2Container" style="display: none;">
+                <label>Cartão 2</label>
+                <select class="form-select mb-2" id="cartao2">
+                    <option value="">Selecione</option>
+                </select>
+
+                <label>Valor no Cartão 2 (R$)</label>
+                <input type="number" id="valorCartao2" class="form-control mb-2" min="10" placeholder="Ex: 30.00">
+
+                <button type="button" class="btn btn-outline-danger btn-sm" onclick="removerSegundoCartao()">Remover Cartão 2</button>
+            </div>
+        </div>
+
+        <button type="button" class="btn btn-outline-primary btn-sm mt-2" onclick="ativarSegundoCartao()">Pagar com 2 cartões</button>
     </div>
 
     <div id="formNovoCartao" style="display: none; max-width: 700px;"  class="border rounded p-3 mb-3">
@@ -153,7 +181,10 @@
                 Frete <span id="freteInfo">R$ 0,00</span>
             </li>
             <li class="list-group-item d-flex justify-content-between">
-                Desconto <span id="descontoInfo">- R$ 0,00</span>
+                Cupom Promocional <span id="valorCupomPromo">- R$ 0,00</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between">
+                Cupom de Troca <span id="valorCupomTroca">- R$ 0,00</span>
             </li>
             <li class="list-group-item d-flex justify-content-between fw-bold">
                 Total <span id="totalCarrinho">R$ 0,00</span>
@@ -174,21 +205,39 @@
     function fecharFormularioEndereco() {
         document.getElementById("formNovoEndereco").style.display = "none";
     }
-    function mostrarFormCartao() {
-        document.getElementById("formNovoCartao").style.display = "block";
-    }
     function fecharFormCartao() {
         document.getElementById("formNovoCartao").style.display = "none";
     }
 </script>
 
 <script>
-    fetch('../navbar/navbar.html')
-        .then(res => res.text())
-        .then(data => {
-            document.getElementById('navbar-placeholder').innerHTML = data;
-        });
+    function mostrarFormCartao() {
+        document.getElementById("formNovoCartao").style.display = "block";
+    }
+
+    function fecharFormCartao() {
+        document.getElementById("formNovoCartao").style.display = "none";
+        document.getElementById("cartaoNumero").value = "";
+        document.getElementById("cartaoValidade").value = "";
+        document.getElementById("cartaoCVV").value = "";
+        document.getElementById("nomeCartao").value = "";
+        document.getElementById("cartaoBandeira").value = "Visa";
+    }
+
+    function ativarSegundoCartao() {
+        document.getElementById("cartao2Container").style.display = "block";
+        document.getElementById("valorCartao1Container").style.display = "block";
+    }
+
+    function removerSegundoCartao() {
+        document.getElementById("cartao2").value = "";
+        document.getElementById("valorCartao2").value = "";
+        document.getElementById("cartao2Container").style.display = "none";
+        document.getElementById("valorCartao1Container").style.display = "none";
+    }
 </script>
+
+<script src="/js/navbar/navbar.js"></script>
 
 </body>
 </html>

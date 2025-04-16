@@ -38,11 +38,9 @@ public class Produto {
     private String imagem;
 
     @ManyToMany
-    @JoinTable(
-            name = "produto_categoria",
-            joinColumns = @JoinColumn(name = "produto_id"),
-            inverseJoinColumns = @JoinColumn(name = "categoria_id")
-    )
+    @JoinTable(name = "tb_categoria_produto",
+            joinColumns = @JoinColumn(name = "id_produto"),
+            inverseJoinColumns = @JoinColumn(name = "id_categoria"))
     private List<Categoria> categorias;
 
     public Long getId() {

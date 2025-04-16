@@ -51,12 +51,6 @@
         <tbody id="listaClientes"></tbody>
     </table>
 </div>
-<script>
-    fetch('../navbar/navbar.html')
-        .then(res => res.text())
-        .then(data => {
-            document.getElementById('navbar-placeholder').innerHTML = data;
-        });
-</script>
+<script src="/js/navbar/navbar.js"></script>
 </body>
 </html>

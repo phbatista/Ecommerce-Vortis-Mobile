@@ -10,4 +10,13 @@ public class VendaViewControlador {
     public String vendaPage() {
         return "carrinho/carrinho";
     }
+
+    @GetMapping("/pedidos")
+    public String pedidosPage() {return "pedidos/pedidos";}
+
+    @GetMapping("/pedidos_admin")
+    public String pedidosAdminPage() {return "pedidos/pedidos_admin";}
+
+    @GetMapping("/trocas")
+    public String trocasPage() {return "trocas/trocas";}
 }
