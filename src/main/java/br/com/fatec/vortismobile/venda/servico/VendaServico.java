@@ -93,6 +93,7 @@ public class VendaServico {
 
         Venda venda = new Venda();
         venda.setDataVenda(LocalDateTime.now());
+        venda.setStatus("EM PROCESSAMENTO");
         venda.setFrete(frete);
         venda.setCliente(cliente);
         venda.setEnderecoEntrega(enderecoEntrega);
@@ -210,9 +211,71 @@ public class VendaServico {
 
     public void atualizarStatus(Long idVenda, String novoStatus) {
         Venda venda = vendaRepositorio.findById(idVenda)
-                .orElseThrow(() -> new RuntimeException("Pedido não encontrado"));
-
-        venda.setStatus(novoStatus.toUpperCase());
+                .orElseThrow(() -> new RuntimeException("Venda não encontrada"));
+        venda.setStatus(novoStatus);
         vendaRepositorio.save(venda);
     }
+
+    private List<PedidoRespostaDTO> mapearParaDTO(List<Venda> vendas) {
+        List<PedidoRespostaDTO> lista = new ArrayList<>();
+
+        for (Venda venda : vendas) {
+            PedidoRespostaDTO dto = new PedidoRespostaDTO();
+            dto.setId(venda.getId());
+            dto.setDataVenda(venda.getDataVenda());
+            dto.setStatus(venda.getStatus());
+
+            Cliente cliente = venda.getCliente();
+            dto.setClienteNome(cliente.getNome());
+
+            // Produtos
+            List<PedidoRespostaDTO.ItemDTO> itensDTO = new ArrayList<>();
+            List<ItemVenda> itensVenda = itemVendaRepositorio.findByVenda(venda);
+            double total = 0;
+
+            for (ItemVenda item : itensVenda) {
+                PedidoRespostaDTO.ItemDTO i = new PedidoRespostaDTO.ItemDTO();
+                i.setProdutoNome(item.getProduto().getNome());
+                i.setQuantidade(item.getQuantidade());
+                i.setPreco(item.getPrecoUnitario());
+                i.setSubtotal(item.getPrecoUnitario() * item.getQuantidade());
+                itensDTO.add(i);
+                total += i.getSubtotal();
+            }
+
+            dto.setProdutos(itensDTO);
+            dto.setFrete(venda.getFrete());
+            dto.setTotal(total + venda.getFrete());
+
+            // Endereço
+            Endereco e = venda.getEnderecoEntrega();
+            dto.setEndereco(String.format("%s %s, %s - %s, %s",
+                    e.getTipoLogradouro(), e.getLogradouro(), e.getNumero(),
+                    e.getBairro(), e.getCidade()));
+
+            // Cartões
+            List<VendaCartao> cartoes = vendaCartaoRepositorio.findByVenda(venda);
+            List<PedidoRespostaDTO.CartaoDTO> listaCartoes = new ArrayList<>();
+            for (VendaCartao v : cartoes) {
+                PedidoRespostaDTO.CartaoDTO c = new PedidoRespostaDTO.CartaoDTO();
+                c.setFinalNumero("**** " + v.getCartao().getCartaoNumero().substring(v.getCartao().getCartaoNumero().length() - 4));
+                c.setValor(v.getValor());
+                listaCartoes.add(c);
+            }
+            dto.setCartoes(listaCartoes);
+
+            dto.setCupomPromocional(venda.getCupomPromocional());
+            dto.setCupomTroca(venda.getCupomTroca());
+
+            lista.add(dto);
+        }
+
+        return lista;
+    }
+
+    public List<PedidoRespostaDTO> listarPedidosDoCliente(Long idCliente) {
+        List<Venda> vendas = vendaRepositorio.findByClienteId(idCliente);
+        return mapearParaDTO(vendas); // reutilize a lógica do listarTodosPedidos()
+    }
+
 }

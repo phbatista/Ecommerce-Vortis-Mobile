@@ -39,4 +39,10 @@ public class VendaControlador {
         return ResponseEntity.ok().build();
     }
 
+    @GetMapping("/meus-pedidos/{idCliente}")
+    public ResponseEntity<List<PedidoRespostaDTO>> meusPedidos(@PathVariable Long idCliente) {
+        return ResponseEntity.ok(vendaServico.listarPedidosDoCliente(idCliente));
+    }
+
+
 }

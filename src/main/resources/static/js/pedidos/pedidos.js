@@ -2,7 +2,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     const tabela = document.getElementById("tabelaPedidos");
 
     try {
-        const resp = await fetch("http://localhost:8080/api/vendas/admin");
+        const idCliente = sessionStorage.getItem("idCliente");
+        const resp = await fetch(`http://localhost:8080/api/vendas/meus-pedidos/${idCliente}`);
         const pedidos = await resp.json();
 
         if (!pedidos.length) {
