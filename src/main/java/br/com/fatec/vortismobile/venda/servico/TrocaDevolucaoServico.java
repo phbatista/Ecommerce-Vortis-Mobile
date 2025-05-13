@@ -26,6 +26,11 @@ public class TrocaDevolucaoServico {
         Venda venda = vendaRepositorio.findById(dto.getIdPedido())
                 .orElseThrow(() -> new RuntimeException("Pedido não encontrado."));
 
+        // Valida se o pedido está entregue
+        if (!"ENTREGUE".equalsIgnoreCase(venda.getStatus())) {
+            throw new RuntimeException("Só é possível solicitar troca ou devolução de pedidos com status ENTREGUE.");
+        }
+
         Produto produto = produtoRepositorio.findById(dto.getIdProduto())
                 .orElseThrow(() -> new RuntimeException("Produto não encontrado."));
 
@@ -38,7 +43,6 @@ public class TrocaDevolucaoServico {
             throw new RuntimeException("Quantidade inválida para troca/devolução.");
         }
 
-        // aqui você pode alterar o status da venda e registrar a solicitação
         if (dto.getTipo().equalsIgnoreCase("TROCA")) {
             venda.setStatus("TROCA SOLICITADA");
         } else if (dto.getTipo().equalsIgnoreCase("DEVOLUCAO")) {
