@@ -5,9 +5,10 @@ import br.com.fatec.vortismobile.produto.modelo.Produto;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface EstoqueRepositorio extends JpaRepository<Estoque, Long> {
-    List<Estoque> findByProdutoId(Long produtoId);
     List<Estoque> findByProduto(Produto produto);
+    Optional<Estoque> findTopByProdutoOrderByDataEntradaDesc(Produto produto);
     List<Estoque> findByProdutoOrderByDataEntradaAsc(Produto produto);
 }

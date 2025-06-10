@@ -1,5 +1,6 @@
 package br.com.fatec.vortismobile.cupom.controlador;
 
+import br.com.fatec.vortismobile.cupom.dto.CupomDTO;
 import br.com.fatec.vortismobile.cupom.modelo.Cupom;
 import br.com.fatec.vortismobile.cupom.repositorio.CupomRepositorio;
 import br.com.fatec.vortismobile.cupom.servico.CupomServico;
@@ -59,7 +60,7 @@ public class CupomControlador {
 
     @GetMapping("/validar/{codigo}")
     public ResponseEntity<?> validar(@PathVariable String codigo, @RequestParam Long idCliente) {
-        Optional<Cupom> cupom = cupomServico.validarCupom(codigo, idCliente);
+        Optional<CupomDTO> cupom = cupomServico.validarCupom(codigo, idCliente);
         return cupom.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 }

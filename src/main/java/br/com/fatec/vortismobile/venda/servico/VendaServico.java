@@ -4,28 +4,43 @@ import br.com.fatec.vortismobile.cliente.modelo.Cartao;
 import br.com.fatec.vortismobile.cliente.modelo.Cliente;
 import br.com.fatec.vortismobile.cliente.modelo.Endereco;
 import br.com.fatec.vortismobile.cliente.repositorio.ClienteRepositorio;
+import br.com.fatec.vortismobile.cupom.repositorio.CupomRepositorio;
+import br.com.fatec.vortismobile.cupom.servico.CupomServico;
 import br.com.fatec.vortismobile.estoque.modelo.Estoque;
 import br.com.fatec.vortismobile.estoque.repositorio.EstoqueRepositorio;
+import br.com.fatec.vortismobile.notificacao.servico.NotificacaoServico;
 import br.com.fatec.vortismobile.produto.modelo.Produto;
 import br.com.fatec.vortismobile.produto.repositorio.ProdutoRepositorio;
 import br.com.fatec.vortismobile.venda.dto.PedidoRespostaDTO;
 import br.com.fatec.vortismobile.venda.dto.VendaDTO;
+import br.com.fatec.vortismobile.venda.modelo.CupomTroca;
 import br.com.fatec.vortismobile.venda.modelo.ItemVenda;
 import br.com.fatec.vortismobile.venda.modelo.Venda;
 import br.com.fatec.vortismobile.venda.modelo.VendaCartao;
-import br.com.fatec.vortismobile.venda.repositorio.CartaoRepositorio;
-import br.com.fatec.vortismobile.venda.repositorio.ItemVendaRepositorio;
-import br.com.fatec.vortismobile.venda.repositorio.VendaCartaoRepositorio;
-import br.com.fatec.vortismobile.venda.repositorio.VendaRepositorio;
+import br.com.fatec.vortismobile.venda.repositorio.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class VendaServico {
+
+    @Autowired
+    private NotificacaoServico notificacaoServico;
+
+    @Autowired
+    private CupomServico cupomServico;
+
+    @Autowired
+    private CupomRepositorio cupomRepositorio;
+
+    @Autowired
+    private CupomTrocaRepositorio cupomTrocaRepositorio;
 
     @Autowired
     private ClienteRepositorio clienteRepositorio;
@@ -72,16 +87,62 @@ public class VendaServico {
                 throw new RuntimeException("Estoque insuficiente para o produto: " + produto.getNome());
             }
 
-            totalProdutos += produto.getPrecoVenda() * itemDTO.getQuantidade();
+            Estoque estoque = estoqueRepositorio.findTopByProdutoOrderByDataEntradaDesc(produto)
+                    .orElseThrow(() -> new RuntimeException("Estoque não encontrado para o produto: " + produto.getNome()));
+            totalProdutos += estoque.getPrecoVenda().doubleValue() * itemDTO.getQuantidade();
         }
 
-        double descontoPromo = dto.getCupomPromocional() != null && dto.getCupomPromocional().equalsIgnoreCase("TESTE") ? 100.0 : 0.0;
+        double descontoPromo = 0.0;
+
+        if (dto.getCupomPromocional() != null && !dto.getCupomPromocional().isBlank()) {
+            var cupomOpt = cupomServico.validarCupom(dto.getCupomPromocional(), cliente.getId());
+            if (cupomOpt.isPresent()) {
+                var cupom = cupomOpt.get();
+                if ("PROMOCIONAL".equalsIgnoreCase(cupom.getTipo())) {
+                    descontoPromo = cupom.getValor();
+                    System.out.println("Cupom aplicado: " + cupom.getCodigo() + " | Valor: " + cupom.getValor());
+                } else {
+                    throw new RuntimeException("Cupom promocional inválido.");
+                }
+            } else {
+                throw new RuntimeException("Cupom promocional não encontrado.");
+            }
+        }
+
         double descontoTroca = 0.0;
 
-        double totalFinal = Math.max(totalProdutos + frete - descontoPromo - descontoTroca, 0);
-        double somaCartoes = dto.getCartoes().stream().mapToDouble(VendaDTO.CartaoPagamentoDTO::getValor).sum();
+        // Cupom de troca
+        if (dto.getCupomTroca() != null && !dto.getCupomTroca().isBlank()) {
+            CupomTroca cupom = cupomTrocaRepositorio.findByCodigoIgnoreCase(dto.getCupomTroca())
+                    .orElseThrow(() -> new RuntimeException("Cupom de troca inválido."));
 
-        if (Math.abs(somaCartoes - totalFinal) > 0.01) {
+            if (!cupom.getCliente().getId().equals(cliente.getId())) {
+                throw new RuntimeException("Este cupom não pertence ao cliente.");
+            }
+
+            if (cupom.isUsado()) {
+                throw new RuntimeException("Este cupom já foi utilizado.");
+            }
+
+            if (cupom.getDataValidade().isBefore(LocalDateTime.now())) {
+                throw new RuntimeException("Cupom expirado.");
+            }
+
+            descontoTroca = cupom.getValor().doubleValue();
+            cupom.setUsado(true);
+            cupomTrocaRepositorio.save(cupom);
+        }
+
+        double totalFinal = Math.max(totalProdutos + frete - descontoPromo - descontoTroca, 0);
+
+        BigDecimal totalEsperado = BigDecimal.valueOf(totalFinal).setScale(2, RoundingMode.HALF_UP);
+        BigDecimal somaCartoes = dto.getCartoes().stream()
+                .map(c -> BigDecimal.valueOf(c.getValor()))
+                .reduce(BigDecimal.ZERO, BigDecimal::add)
+                .setScale(2, RoundingMode.HALF_UP);
+
+        if (somaCartoes.compareTo(totalEsperado) != 0) {
+            System.out.println("DEBUG >>> Esperado: " + totalEsperado + " | Recebido: " + somaCartoes);
             throw new RuntimeException("A soma dos valores dos cartões não corresponde ao total da compra.");
         }
 
@@ -99,6 +160,7 @@ public class VendaServico {
         venda.setEnderecoEntrega(enderecoEntrega);
         venda.setCupomPromocional(dto.getCupomPromocional());
         venda.setCupomTroca(dto.getCupomTroca());
+        venda.setTotal(totalFinal);
         venda = vendaRepositorio.save(venda);
 
         for (VendaDTO.ItemDTO itemDTO : dto.getItens()) {
@@ -107,7 +169,9 @@ public class VendaServico {
             ItemVenda item = new ItemVenda();
             item.setProduto(produto);
             item.setQuantidade(itemDTO.getQuantidade());
-            item.setPrecoUnitario(produto.getPrecoVenda());
+            Estoque estoqueItem = estoqueRepositorio.findTopByProdutoOrderByDataEntradaDesc(produto)
+                    .orElseThrow(() -> new RuntimeException("Estoque não encontrado para o produto: " + produto.getNome()));
+            item.setPrecoUnitario(estoqueItem.getPrecoVenda().doubleValue());
             item.setVenda(venda);
             itemVendaRepositorio.save(item);
 
@@ -140,7 +204,10 @@ public class VendaServico {
             vendaCartaoRepositorio.save(vendaCartao);
         }
 
+        notificacaoServico.gerarNotificacaoCompraRealizada(cliente, venda.getId());
+
         return venda.getId();
+
     }
 
     public List<PedidoRespostaDTO> listarTodosPedidos() {
@@ -213,6 +280,7 @@ public class VendaServico {
         Venda venda = vendaRepositorio.findById(idVenda)
                 .orElseThrow(() -> new RuntimeException("Venda não encontrada"));
         venda.setStatus(novoStatus);
+        notificacaoServico.gerarNotificacaoStatusAtualizado(venda.getCliente(), venda.getId(), novoStatus);
         vendaRepositorio.save(venda);
     }
 
@@ -245,7 +313,22 @@ public class VendaServico {
 
             dto.setProdutos(itensDTO);
             dto.setFrete(venda.getFrete());
-            dto.setTotal(total + venda.getFrete());
+
+            double descontoPromo = 0.0;
+            if (venda.getCupomPromocional() != null && !venda.getCupomPromocional().isBlank()) {
+                descontoPromo = cupomRepositorio.findByCodigoAndAtivoTrue(venda.getCupomPromocional())
+                        .map(c -> c.getValor())
+                        .orElse(0.0);
+            }
+
+            double descontoTroca = 0.0;
+            if (venda.getCupomTroca() != null && !venda.getCupomTroca().isBlank()) {
+                descontoTroca = cupomTrocaRepositorio.findByCodigoIgnoreCase(venda.getCupomTroca())
+                        .map(c -> c.getValor().doubleValue())
+                        .orElse(0.0);
+            }
+
+            dto.setTotal(total + venda.getFrete() - descontoPromo - descontoTroca);
 
             // Endereço
             Endereco e = venda.getEnderecoEntrega();

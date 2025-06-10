@@ -17,7 +17,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             const linha = document.createElement("tr");
             linha.innerHTML = `
                 <td>
-                    <button class="btn btn-sm btn-outline-dark" type="button" data-bs-toggle="collapse" data-bs-target="#${collapseId}" aria-expanded="false" aria-controls="${collapseId}">
+                    <button class="btn btn-sm btn-outline-dark" data-bs-toggle="collapse" data-bs-target="#${collapseId}">
                         ▼
                     </button>
                 </td>
@@ -27,8 +27,12 @@ document.addEventListener("DOMContentLoaded", async () => {
                 <td>
                     ${p.status === 'ENTREGUE' ? `
                         <button class="btn btn-sm btn-outline-primary" onclick="abrirFormularioTroca(${p.id})">
-                            Solicitar Troca/Devolução
-                        </button>` : '-'}
+                            Trocar Produto
+                        </button>
+                        <button class="btn btn-sm btn-outline-danger ms-2" onclick="abrirFormularioDevolucao(${p.id})">
+                            Devolver Produto
+                        </button>
+                    ` : '-'}
                 </td>
             `;
 
@@ -66,3 +70,103 @@ document.addEventListener("DOMContentLoaded", async () => {
         tabela.innerHTML = `<tr><td colspan="5" class="text-center">Erro ao carregar pedidos.</td></tr>`;
     }
 });
+
+async function abrirFormularioTroca(idPedido) {
+    const resp = await fetch(`http://localhost:8080/api/vendas/${idPedido}`);
+    const pedido = await resp.json();
+
+    let html = '';
+    pedido.produtos.forEach((item, index) => {
+        html += `
+            <div class="mb-2">
+                <label><strong>${item.produtoNome}</strong></label><br>
+                <input type="number" min="0" max="${item.quantidade}" value="0" 
+                    data-id-produto="${item.idProduto}" class="form-control form-control-sm troca-qtd" placeholder="Qtd a trocar">
+            </div>`;
+    });
+
+    Swal.fire({
+        title: 'Solicitar Troca',
+        html,
+        confirmButtonText: 'Confirmar Troca',
+        preConfirm: () => {
+            const itens = Array.from(document.querySelectorAll('.troca-qtd'))
+                .map(input => ({
+                    idProduto: input.dataset.idProduto,
+                    quantidade: parseInt(input.value)
+                }))
+                .filter(i => i.quantidade > 0);
+            return itens;
+        }
+    }).then(async result => {
+        if (result.isConfirmed && result.value.length > 0) {
+            console.log("Payload enviado:", JSON.stringify({
+                idPedido,
+                tipo: "TROCA",
+                itens: result.value.map(i => ({
+                    idProduto: Number(i.idProduto),
+                    quantidade: i.quantidade,
+                    motivo: "Solicitado pelo cliente"
+                }))
+            }, null, 2));
+
+            await fetch("http://localhost:8080/api/vendas/solicitar-troca-ou-devolucao", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    idPedido,
+                    tipo: "TROCA",
+                    itens: result.value.map(i => ({
+                        idProduto: Number(i.idProduto), // Certifique que é número
+                        quantidade: i.quantidade,
+                        motivo: "Solicitado pelo cliente"
+                    }))
+                })
+            });
+            Swal.fire("Solicitado!", "Seu pedido de troca foi registrado.", "success").then(() => location.reload());
+        }
+    });
+}
+
+async function abrirFormularioDevolucao(idPedido) {
+    const resp = await fetch(`http://localhost:8080/api/vendas/${idPedido}`);
+    const pedido = await resp.json();
+
+    let html = '';
+    pedido.produtos.forEach((item, index) => {
+        html += `
+            <div class="mb-2">
+                <label><strong>${item.produtoNome}</strong></label><br>
+                <input type="number" min="0" max="${item.quantidade}" value="0" 
+                    data-id-produto="${item.idProduto}" class="form-control form-control-sm devolucao-qtd" placeholder="Qtd a devolver">
+            </div>`;
+    });
+
+    Swal.fire({
+        title: 'Solicitar Devolução',
+        html,
+        confirmButtonText: 'Confirmar Devolução',
+        preConfirm: () => {
+            const itens = Array.from(document.querySelectorAll('.devolucao-qtd'))
+                .map(input => ({
+                    idProduto: Number(input.dataset.idProduto),
+                    quantidade: parseInt(input.value)
+                }))
+                .filter(i => i.quantidade > 0);
+            return itens;
+        }
+    }).then(async result => {
+        if (result.isConfirmed && result.value.length > 0) {
+            await fetch("http://localhost:8080/api/vendas/solicitar-troca-ou-devolucao", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    idPedido,
+                    tipo: "DEVOLUCAO",
+                    itens: result.value
+                })
+            });
+            Swal.fire("Solicitado!", "Sua devolução foi registrada.", "success").then(() => location.reload());
+        }
+    });
+}

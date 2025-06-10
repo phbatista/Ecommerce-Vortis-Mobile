@@ -6,7 +6,8 @@
   <title>Lista de Produtos - Vortis Mobile</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="/js/clientes/clientes_lista.js" defer></script>
+  <script src="/js/produtos/produtos_lista.js" defer></script>
+  <script src="/js/navbar/navbar.js"></script>
 </head>
 <body>
 
@@ -16,21 +17,27 @@
   <h3>Lista de Produtos</h3>
 
   <div class="row mb-3">
-    <div class="col-md-4">
-      <label for="filtroCampo" class="form-label">Filtrar por:</label>
-      <select id="filtroCampo" class="form-select">
-        <option value="nome">Nome</option>
-        <option value="ano">Ano</option>
-        <option value="preco">Preço</option>
-        <option value="armazenamento">Armazenamento</option>
-        <option value="status">Status</option>
-      </select>
+    <div class="col-md-2">
+      <label class="form-label">Nome:</label>
+      <input type="text" id="filtroNome" class="form-control">
     </div>
-    <div class="col-md-4">
-      <label for="filtroValor" class="form-label">Valor:</label>
-      <input type="text" id="filtroValor" class="form-control" placeholder="Digite sua busca">
+    <div class="col-md-2">
+      <label class="form-label">Ano:</label>
+      <input type="text" id="filtroAno" class="form-control">
     </div>
-    <div class="col-md-4 d-flex align-items-end">
+    <div class="col-md-2">
+      <label class="form-label">Preço:</label>
+      <input type="text" id="filtroPreco" class="form-control">
+    </div>
+    <div class="col-md-2">
+      <label class="form-label">Armazenamento:</label>
+      <input type="text" id="filtroArmazenamento" class="form-control">
+    </div>
+    <div class="col-md-2">
+      <label class="form-label">Status:</label>
+      <input type="text" id="filtroStatus" class="form-control">
+    </div>
+    <div class="col-md-2 d-flex align-items-end">
       <button class="btn btn-primary me-2" onclick="filtrarClientes()">Buscar</button>
       <button class="btn btn-secondary" onclick="limparFiltro()">Limpar</button>
     </div>
@@ -40,26 +47,46 @@
     <thead class="table-dark">
     <tr>
       <th>Nome</th>
+      <th>Chipset</th>
       <th>Ano</th>
       <th>Armazenamento</th>
-      <th>Preço</th>
       <th>Status</th>
       <th>Ações</th>
     </tr>
     </thead>
-    <tbody>
-    <tr>
-      <td>Vortis X Senior</td>
-      <td>2025</td>
-      <td>512 GB</td>
-      <td>R$ 5.000,00</td>
-      <td>Ativo</td>
-      <td><button class="btn btn-danger btn-sm">Excluir</button></td>
-    </tr>
+    <tbody id="tabelaProdutos">
     </tbody>
   </table>
   <a href="produtos_cadastro" type="submit" class="btn btn-success">Cadastrar Novo Produto</a>
 </div>
-<script src="/js/navbar/navbar.js"></script>
+
+<!-- Modal -->
+<div class="modal fade" id="modalMotivoStatus" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Alterar Status do Produto</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="produtoIdModal">
+        <input type="hidden" id="novoStatusModal">
+        <div class="mb-3">
+          <label for="motivoStatus" class="form-label">Motivo</label>
+          <input type="text" class="form-control" id="motivoStatus">
+        </div>
+        <div class="mb-3">
+          <label for="justificativaStatus" class="form-label">Justificativa</label>
+          <textarea class="form-control" id="justificativaStatus"></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button class="btn btn-primary" onclick="confirmarAlteracaoStatus()">Confirmar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>

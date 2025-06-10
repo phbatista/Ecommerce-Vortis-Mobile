@@ -14,7 +14,9 @@
 
             <ul class="navbar-nav ms-3">
                 <li class="nav-item"><a class="nav-link" href="carrinho">Carrinho</a></li>
-                <li class="nav-item"><a class="nav-link" href="pedidos">Meus Pedidos</a></li>
+                <li class="nav-item"><a class="nav-link" href="pedidos">Pedidos</a></li>
+                <li class="nav-item"><a class="nav-link" href="trocas">Trocas</a></li>
+                <li class="nav-item"><a class="nav-link" href="notificacoes">🔔</a></li>
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
                         Admin
@@ -24,9 +26,9 @@
                         <li><a class="dropdown-item" href="produtos_lista">Produtos</a></li>
                         <li><a class="dropdown-item" href="estoque">Estoque</a></li>
                         <li><a class="dropdown-item" href="pedidos_admin">Pedidos</a></li>
-                        <li><a class="dropdown-item" href="../trocas/trocas.html">Trocas</a></li>
+                        <li><a class="dropdown-item" href="trocas_admin">Trocas</a></li>
                         <li><a class="dropdown-item" href="cupons">Cupons</a></li>
-                        <li><a class="dropdown-item" href="../cupons/cupons.html">Dashboard</a></li>
+                        <li><a class="dropdown-item" href=".">Dashboard</a></li>
                     </ul>
                 </li>
             </ul>
@@ -40,11 +42,6 @@
         const menuUsuario = document.getElementById("menuUsuario");
         const idCliente = sessionStorage.getItem("idCliente");
         const nomeCliente = sessionStorage.getItem("nomeCliente");
-
-        console.log("JS RODANDO");
-        console.log("idCliente:", idCliente);
-        console.log("nomeCliente:", nomeCliente);
-        console.log("menuUsuario:", menuUsuario);
 
         if (menuUsuario) {
             if (idCliente && nomeCliente) {

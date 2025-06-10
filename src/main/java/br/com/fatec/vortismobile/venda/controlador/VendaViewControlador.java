@@ -18,5 +18,8 @@ public class VendaViewControlador {
     public String pedidosAdminPage() {return "pedidos/pedidos_admin";}
 
     @GetMapping("/trocas")
-    public String trocasPage() {return "trocas/trocas";}
+    public String trocasPage() {return "trocas/trocas_cliente";}
+
+    @GetMapping("trocas_admin")
+    public String trocasAdminPage() {return "trocas/trocas_admin";}
 }

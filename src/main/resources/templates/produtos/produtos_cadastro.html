@@ -73,7 +73,7 @@
     </div>
 
     <div class="row">
-      <div class="col-md-4 mb-3">
+      <div class="col-md-3 mb-3">
         <label class="form-label">Memória RAM (GB)</label>
         <select class="form-select" id="memoria_ram" required>
           <option value="">Selecione</option>
@@ -83,7 +83,7 @@
           <option value="12gb">12 GB</option>
         </select>
       </div>
-      <div class="col-md-4 mb-3">
+      <div class="col-md-3 mb-3">
         <label class="form-label">Armazenamento (GB)</label>
         <select class="form-select" id="armazenamento" required>
           <option value="">Selecione</option>
@@ -93,119 +93,91 @@
           <option value="512gb">512 GB</option>
         </select>
       </div>
-      <div class="col-md-4 mb-3">
+      <div class="col-md-3 mb-3">
         <label class="form-label">Código de Barras</label>
         <input type="text" class="form-control" id="codigo_barras" required>
-      </div>
-    </div>
-
-    <div class="mb-3">
-      <label class="form-label fw-bold">Categorias:</label>
-      <div class="row">
-        <div class="col-md-3">
-          <div class="form-check">
-            <input class="form-check-input" type="checkbox" name="categorias" value="5G" id="categoria1">
-            <label class="form-check-label" for="categoria1">5G</label>
-          </div>
-          <div class="form-check">
-            <input class="form-check-input" type="checkbox" name="categorias" value="Resistente à Água" id="categoria2">
-            <label class="form-check-label" for="categoria2">Resistente à Água</label>
-          </div>
-        </div>
-        <div class="col-md-3">
-          <div class="form-check">
-            <input class="form-check-input" type="checkbox" name="categorias" value="Gamer" id="categoria3">
-            <label class="form-check-label" for="categoria3">Gamer</label>
-          </div>
-          <div class="form-check">
-            <input class="form-check-input" type="checkbox" name="categorias" value="Com Caneta" id="categoria4">
-            <label class="form-check-label" for="categoria4">Com Caneta</label>
-          </div>
-        </div>
-        <div class="col-md-3">
-          <div class="form-check">
-            <input class="form-check-input" type="checkbox" name="categorias" value="NFC" id="categoria5">
-            <label class="form-check-label" for="categoria5">NFC</label>
-          </div>
-          <div class="form-check">
-            <input class="form-check-input" type="checkbox" name="categorias" value="Dual Chip" id="categoria6">
-            <label class="form-check-label" for="categoria6">Dual Chip</label>
-          </div>
-        </div>
-        <div class="col-md-3">
-          <div class="form-check">
-            <input class="form-check-input" type="checkbox" name="categorias" value="Desbloqueio Facial" id="categoria7">
-            <label class="form-check-label" for="categoria7">Desbloqueio Facial</label>
-          </div>
-          <div class="form-check">
-            <input class="form-check-input" type="checkbox" name="categorias" value="Carregamento Rápido" id="categoria8">
-            <label class="form-check-label" for="categoria8">Carregamento Rápido</label>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col-md-3 mb-3">
-        <label class="form-label">Fabricado</label>
-        <select class="form-select" id="fabricante" required>
-          <option value="">Selecione</option>
-          <option value="china">China</option>
-          <option value="indonesia">Indonésia</option>
-          <option value="malasia">Malásia</option>
-          <option value="vietna">Vietnã</option>
-        </select>
       </div>
       <div class="col-md-3 mb-3">
         <label class="form-label">Grupo de Precificação</label>
         <select class="form-select" id="grupo_precificacao" required>
           <option value="">Selecione</option>
           <option value="padrao">Padrão</option>
-          <option value="premium">Premium</option>
           <option value="intermediario">Intermediário</option>
+          <option value="premium">Premium</option>
         </select>
       </div>
-      <div class="col-md-3 mb-3">
-        <label class="form-label">Preço de Custo (R$)</label>
-        <input type="number" class="form-control" id="preco_custo" step="0.01" required>
-      </div>
-      <div class="col-md-3 mb-3">
-        <label class="form-label">Preço de Venda (R$)</label>
-        <input type="number" class="form-control" id="preco_venda" step="0.01" required>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label fw-bold">Categorias:</label>
+      <div class="row">
+        <div class="col-md-2">
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" name="categorias" value="5G" id="categoria1">
+            <label class="form-check-label" for="categoria1">5G</label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" name="categorias" value="Gamer" id="categoria2">
+            <label class="form-check-label" for="categoria2">Gamer</label>
+          </div>
+        </div>
+        <div class="col-md-2">
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" name="categorias" value="IA" id="categoria3">
+            <label class="form-check-label" for="categoria3">IA</label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" name="categorias" value="Prova d'Água" id="categoria4">
+            <label class="form-check-label" for="categoria4">Prova d'Água</label>
+          </div>
+        </div>
+        <div class="col-md-2">
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" name="categorias" value="Ultra Charger" id="categoria5">
+            <label class="form-check-label" for="categoria5">Ultra Charger</label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" name="categorias" value="Dual Chip" id="categoria6">
+            <label class="form-check-label" for="categoria6">Dual Chip</label>
+          </div>
+        </div>
+        <div class="col-md-2">
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" name="categorias" value="Face ID" id="categoria7">
+            <label class="form-check-label" for="categoria7">Face ID</label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" name="categorias" value="Super Zoom" id="categoria8">
+            <label class="form-check-label" for="categoria8">Super Zoom</label>
+          </div>
+        </div>
+        <div class="col-md-2">
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" name="categorias" value="Tela Curva" id="categoria9">
+            <label class="form-check-label" for="categoria9">Tela Curva</label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" name="categorias" value="NFC" id="categoria10">
+            <label class="form-check-label" for="categoria10">NFC</label>
+          </div>
+        </div>
       </div>
     </div>
+
     <div class="row">
-    <div class="mb-3">
+    <div class="col-md-6 mb-4">
       <label class="form-label">Imagem do Produto</label>
       <input type="file" class="form-control" id="imagem" name="imagem" accept="image/*">
     </div>
     </div>
-    <div class="row">
-      <div class="col-md-3 mb-3">
-        <label class="form-label">Status</label>
-        <select class="form-select" id="status" required>
-          <option value="ativo">Ativo</option>
-          <option value="inativo">Inativo</option>
-        </select>
-      </div>
-      <div class="col-md-3 mb-3">
-        <label class="form-label">Motivo</label>
-        <select class="form-select" id="motivo" required>
-          <option value="selecione">Selecione</option>
-          <option value="fora_de_mercado">Fora de Mercado</option>
-          <option value="sem_estoque">Sem Estoque</option>
-        </select>
-      </div>
-      <div class="col-md-6 mb-3">
-        <label class="form-label">Justificativa</label>
-        <input type="text" class="form-control" id="justificativa" required>
-      </div>
-    </div>
 
     <button type="submit" class="btn btn-success">Cadastrar Produto</button>
     <a href="produtos_lista" class="btn btn-secondary">Cancelar</a>
+
   </form>
 </div>
+
 <script src="/js/navbar/navbar.js"></script>
+
 </body>
 </html>

@@ -108,10 +108,19 @@ public class PedidoRespostaDTO {
 
     // Subclasse ItemDTO
     public static class ItemDTO {
+        private Long idProduto;
         private String produtoNome;
         private int quantidade;
         private double preco;
         private double subtotal;
+
+        public Long getIdProduto() {
+            return idProduto;
+        }
+
+        public void setIdProduto(Long idProduto) {
+            this.idProduto = idProduto;
+        }
 
         public String getProdutoNome() {
             return produtoNome;
@@ -144,6 +153,7 @@ public class PedidoRespostaDTO {
         public void setSubtotal(double subtotal) {
             this.subtotal = subtotal;
         }
+
     }
 
     // Subclasse CartaoDTO

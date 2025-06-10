@@ -21,18 +21,15 @@ document.addEventListener("DOMContentLoaded", function () {
         formData.append("memoriaRam", document.getElementById("memoria_ram").value);
         formData.append("armazenamento", document.getElementById("armazenamento").value);
         formData.append("codigoBarras", document.getElementById("codigo_barras").value);
-        formData.append("fabricante", document.getElementById("fabricante").value);
         formData.append("grupoPrecificacao", document.getElementById("grupo_precificacao").value);
-        formData.append("precoCusto", document.getElementById("preco_custo").value);
-        formData.append("precoVenda", document.getElementById("preco_venda").value);
-        formData.append("status", document.getElementById("status").value);
-        formData.append("motivo", document.getElementById("motivo").value);
-        formData.append("justificativa", document.getElementById("justificativa").value);
+        formData.append("status", "ATIVO");
+        formData.append("motivo", "CADASTRO");
+        formData.append("justificativa", "Novo Cadastro");
 
         //categorias
         const categoriasSelecionadas = Array.from(document.querySelectorAll("input[name='categorias']:checked"))
             .map(cb => cb.value);
-        categoriasSelecionadas.forEach(cat => formData.append("categorias", cat));
+        categoriasSelecionadas.forEach(cat => formData.append("nomesCategorias", cat));
 
         //imagem
         const imagemInput = document.getElementById("imagem");

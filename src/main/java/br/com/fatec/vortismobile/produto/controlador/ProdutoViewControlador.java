@@ -13,4 +13,10 @@ public class ProdutoViewControlador {
 
     @GetMapping("produtos_lista")
     public String produtoLista() {return "produtos/produtos_lista";}
+
+    @GetMapping("catalogo")
+    public String catalogo() {return "catalogo/catalogo";}
+
+    @GetMapping("produtos_edicao")
+    public String produtoEdicao() {return "produtos/produtos_edicao";}
 }

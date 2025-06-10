@@ -39,11 +39,93 @@
     <div id="filtrosCategorias" class="mb-4"></div>
   </div>
 
-  <div class="row" id="catalogoProdutos">
+  <div class="d-flex flex-wrap justify-content-start mt-4" id="catalogo-container">
 
   </div>
 </div>
 
+<div class="chatbot-icon" onclick="toggleChat()">
+  💬
+</div>
+
+<div class="chatbot-window" id="chatbotWindow">
+  <div class="chatbot-header">Assistente Vortis</div>
+  <div class="chatbot-content" id="chatbotContent"></div>
+  <div class="chatbot-input-container">
+    <input type="text" id="userMessage" placeholder="Digite sua pergunta...">
+    <button onclick="sendMessage()">Enviar</button>
+  </div>
+</div>
+
+<style>
+  .chatbot-icon {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: #007bff;
+    color: white;
+    padding: 12px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 20px;
+    z-index: 999;
+  }
+
+  .chatbot-window {
+    display: none;
+    position: fixed;
+    bottom: 80px;
+    right: 20px;
+    width: 400px;
+    max-height: 550px;
+    background-color: white;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 0 10px rgba(0,0,0,0.3);
+    z-index: 1000;
+  }
+
+  .chatbot-header {
+    background-color: #007bff;
+    color: white;
+    padding: 10px;
+    font-weight: bold;
+    text-align: center;
+  }
+
+  .chatbot-content {
+    padding: 10px;
+    height: 380px;
+    overflow-y: auto;
+    font-size: 15px;
+  }
+
+  .chatbot-input-container {
+    display: flex;
+    padding: 10px;
+    border-top: 1px solid #ccc;
+  }
+
+  .chatbot-input-container input {
+    flex: 1;
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+
+  .chatbot-input-container button {
+    margin-left: 5px;
+    padding: 5px 10px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+  }
+</style>
+
+<script src="/js/chatbot/chatbot.js"></script>
 <script src="/js/navbar/navbar.js"></script>
+
 </body>
 </html>

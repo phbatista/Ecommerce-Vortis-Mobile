@@ -1,7 +1,9 @@
 package br.com.fatec.vortismobile.cupom.servico;
 
+import br.com.fatec.vortismobile.cupom.dto.CupomDTO;
 import br.com.fatec.vortismobile.cupom.modelo.Cupom;
 import br.com.fatec.vortismobile.cupom.repositorio.CupomRepositorio;
+import br.com.fatec.vortismobile.venda.modelo.CupomTroca;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +16,10 @@ public class CupomServico {
 
     @Autowired
     private CupomRepositorio cupomRepositorio;
+
+    @Autowired
+    private br.com.fatec.vortismobile.venda.repositorio.CupomTrocaRepositorio cupomTrocaRepositorio;
+
 
     public List<Cupom> listarTodos() {
         return cupomRepositorio.findAll();
@@ -31,19 +37,44 @@ public class CupomServico {
         cupomRepositorio.deleteById(id);
     }
 
-    public Optional<Cupom> validarCupom(String codigo, Long idCliente) {
+    public Optional<CupomDTO> validarCupom(String codigo, Long idCliente) {
         Optional<Cupom> cupomOpt = cupomRepositorio.findByCodigoAndAtivoTrue(codigo);
 
-        if (cupomOpt.isEmpty()) return Optional.empty();
+        if (cupomOpt.isPresent()) {
+            Cupom cupom = cupomOpt.get();
 
-        Cupom cupom = cupomOpt.get();
+            if (cupom.getTipo().equalsIgnoreCase("TROCA")) {
+                if (cupom.getCliente() == null || !cupom.getCliente().getId().equals(idCliente)) {
+                    return Optional.empty();
+                }
+            }
 
-        if (cupom.getTipo().equalsIgnoreCase("TROCA")) {
-            if (cupom.getCliente() == null || !cupom.getCliente().getId().equals(idCliente)) {
-                return Optional.empty();
+            return Optional.of(new CupomDTO(
+                    cupom.getCodigo(),
+                    cupom.getValor(),
+                    "PROMOCIONAL"
+            ));
+        }
+
+        Optional<CupomTroca> trocaOpt = cupomTrocaRepositorio.findByCodigoIgnoreCase(codigo);
+
+        if (trocaOpt.isPresent()) {
+            CupomTroca troca = trocaOpt.get();
+
+            if (!troca.isUsado()
+                    && troca.getCliente().getId().equals(idCliente)
+                    && troca.getDataValidade().toLocalDate().isAfter(LocalDate.now())) {
+
+                return Optional.of(new CupomDTO(
+                        troca.getCodigo(),
+                        troca.getValor().doubleValue(),
+                        "TROCA"
+                ));
             }
         }
 
-        return Optional.of(cupom);
+        System.out.println("Cupom de troca não válido para o cliente: " + codigo + ", ID cliente: " + idCliente);
+        return Optional.empty();
+
     }
 }

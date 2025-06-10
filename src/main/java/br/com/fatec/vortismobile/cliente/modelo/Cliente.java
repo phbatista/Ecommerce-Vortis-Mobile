@@ -1,5 +1,6 @@
 package br.com.fatec.vortismobile.cliente.modelo;
 
+import br.com.fatec.vortismobile.venda.modelo.CupomTroca;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import java.util.ArrayList;
@@ -56,6 +57,9 @@ public class Cliente {
     @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private List<Cartao> cartoes = new ArrayList<>();
+
+    @OneToMany(mappedBy = "cliente")
+    private List<CupomTroca> cuponsTroca;
 
     public Cliente() {}
 
@@ -163,5 +167,9 @@ public class Cliente {
 
     public LocalDateTime getUpdateDate() {
         return updateDate;
+    }
+
+    public List<CupomTroca> getCuponsTroca() {
+        return cuponsTroca;
     }
 }

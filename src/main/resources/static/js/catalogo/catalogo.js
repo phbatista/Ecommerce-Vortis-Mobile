@@ -1,3 +1,7 @@
+document.addEventListener("DOMContentLoaded", async () => {
+    await carregarCatalogo();
+});
+
 function carregarCarrinho() {
     return JSON.parse(localStorage.getItem("carrinho")) || [];
 }
@@ -5,13 +9,6 @@ function carregarCarrinho() {
 function salvarCarrinho(carrinho) {
     localStorage.setItem("carrinho", JSON.stringify(carrinho));
 }
-
-document.addEventListener("DOMContentLoaded", async () => {
-    await carregarCatalogo(); // carrega catálogo e categorias
-});
-
-let todasCategorias = new Set();
-let todosProdutos = [];
 
 function preencherFiltros() {
     const divFiltros = document.getElementById("filtrosCategorias");
@@ -42,9 +39,10 @@ function aplicarFiltro() {
 
     const filtrados = todosProdutos.filter(p => {
         const nomeMatch = p.nome.toLowerCase().includes(nomeBusca);
-        const precoMatch = p.precoVenda >= precoMin && p.precoVenda <= precoMax;
+        const precoBase = p.estoque?.at(-1)?.precoVenda || 0;
+        const precoMatch = precoBase >= precoMin && precoBase <= precoMax;
         const categoriaMatch = categoriasSelecionadas.length === 0 ||
-            p.categorias.some(cat => categoriasSelecionadas.includes(cat));
+            p.categorias.some(cat => categoriasSelecionadas.includes(cat.nome));
         return nomeMatch && precoMatch && categoriaMatch;
     });
 
@@ -62,24 +60,42 @@ function limparFiltros() {
 }
 
 async function renderizarProdutos(produtos) {
-    const container = document.getElementById("catalogoProdutos");
+    const container = document.getElementById("catalogo-container");
     container.innerHTML = "";
 
     for (const produto of produtos) {
-        const estoqueResp = await fetch(`http://localhost:8080/api/estoque/produto/${produto.id}`);
-        const estoque = await estoqueResp.json();
-        const totalEstoque = estoque.reduce((soma, item) => soma + item.quantidade, 0);
+        let precoVendaTexto = "Indisponível";
+        let totalEstoque = 0;
+        let precoVenda = null;
+
+        try {
+            const estoqueResp = await fetch(`http://localhost:8080/api/estoque/produto/${produto.id}`);
+            if (estoqueResp.ok) {
+                const estoques = await estoqueResp.json();
+                totalEstoque = estoques.reduce((soma, e) => soma + e.quantidade, 0);
+
+                if (estoques.length > 0) {
+                    const maisRecente = estoques[estoques.length - 1];
+                    precoVenda = maisRecente.precoVenda;
+                    precoVendaTexto = "R$ " + parseFloat(precoVenda).toFixed(2);
+                }
+            }
+        } catch (err) {
+            console.warn("Erro ao buscar estoque:", err);
+        }
+
+        const imagemSrc = `http://localhost:8080/api/produtos/imagem/${produto.imagem}`;
 
         const card = document.createElement("div");
         card.classList.add("col-md-3", "mb-4");
 
         card.innerHTML = `
             <div class="card h-100">
-                <img src="/${produto.imagem}" class="card-img-top" style="height: 259px; object-fit: cover;" alt="Imagem do Produto">
+                <img src="${imagemSrc}" class="card-img-top" style="height: 259px; object-fit: cover;" alt="Imagem do Produto">
                 <div class="card-body text-center">
                     <h5 class="card-title">${produto.nome}</h5>
-                    <p class="text-muted small">${produto.categorias.join(" • ")}</p>
-                    <p class="card-text">R$ ${produto.precoVenda.toFixed(2)}</p>
+                    <p class="text-muted small">${produto.categorias.map(cat => cat.nome).join(" • ")}</p>
+                    <p class="card-text">${precoVendaTexto}</p>
                     <button class="btn btn-dark btn-comprar" data-id="${produto.id}" ${totalEstoque <= 0 ? "disabled" : ""}>
                         ${totalEstoque <= 0 ? "Indisponível" : "Comprar"}
                     </button>
@@ -89,28 +105,31 @@ async function renderizarProdutos(produtos) {
 
         container.appendChild(card);
 
-        // agora sim: evento dentro do mesmo escopo
         const btn = card.querySelector(".btn-comprar");
         if (btn) {
-            btn.addEventListener("click", () => adicionarAoCarrinho(produto.id));
+            btn.addEventListener("click", () => adicionarAoCarrinho(produto.id, precoVenda));
         }
     }
 }
 
 async function carregarCatalogo() {
-    const container = document.getElementById("catalogoProdutos");
+    const container = document.getElementById("catalogo-container");
     container.innerHTML = "";
 
     try {
         const resposta = await fetch("http://localhost:8080/api/produtos");
-        todosProdutos = await resposta.json();
 
-        // capturar categorias únicas
+        todosProdutos = (await resposta.json()).filter(p => p.status.toUpperCase() === "ATIVO");
+        todosProdutos = todosProdutos.filter((prod, index, self) =>
+            index === self.findIndex(p => p.id === prod.id)
+        );
         todasCategorias = new Set();
-        todosProdutos.forEach(p => p.categorias.forEach(cat => todasCategorias.add(cat)));
+        todosProdutos.forEach(p =>
+            p.categorias.forEach(cat => todasCategorias.add(cat.nome))
+        );
 
-        preencherFiltros(); // renderiza os filtros
-        renderizarProdutos(todosProdutos); // renderiza todos
+        preencherFiltros();
+        await renderizarProdutos(todosProdutos);
 
     } catch (error) {
         console.error("Erro ao carregar produtos:", error);
@@ -129,12 +148,16 @@ async function adicionarAoCarrinho(idProduto) {
         }
 
         const produto = await respProduto.json();
-        const estoque = await respEstoque.json();
-        const totalEstoque = estoque.reduce((soma, item) => soma + item.quantidade, 0);
+        const estoques = await respEstoque.json();
+
+        const totalEstoque = estoques.reduce((soma, item) => soma + item.quantidade, 0);
 
         if (totalEstoque <= 0) {
             return alert("Produto sem estoque.");
         }
+
+        const estoqueMaisRecente = estoques[estoques.length - 1];
+        const precoVenda = estoqueMaisRecente?.precoVenda ?? 0;
 
         let carrinho = carregarCarrinho();
         let item = carrinho.find(p => p.id === produto.id);
@@ -148,7 +171,7 @@ async function adicionarAoCarrinho(idProduto) {
             carrinho.push({
                 id: produto.id,
                 nome: produto.nome,
-                precoVenda: produto.precoVenda,
+                precoVenda: precoVenda,
                 quantidade: 1
             });
         }

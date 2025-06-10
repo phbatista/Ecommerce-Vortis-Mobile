@@ -2,6 +2,7 @@ package br.com.fatec.vortismobile.venda.modelo;
 
 import br.com.fatec.vortismobile.cliente.modelo.Cliente;
 import br.com.fatec.vortismobile.cliente.modelo.Endereco;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -27,6 +28,8 @@ public class Venda {
     @ManyToOne
     @JoinColumn(name = "endereco_entrega_id", nullable = false)
     private Endereco enderecoEntrega;
+
+    @JsonIgnoreProperties({"itens", "cartoes", "cliente", "enderecoEntrega"})
 
     @OneToMany(mappedBy = "venda", cascade = CascadeType.ALL)
     private List<ItemVenda> itens;
@@ -122,4 +125,15 @@ public class Venda {
     public void setCupomTroca(String cupomTroca) {
         this.cupomTroca = cupomTroca;
     }
+
+    private Double total;
+
+    public Double getTotal() {
+        return total;
+    }
+
+    public void setTotal(Double total) {
+        this.total = total;
+    }
+
 }

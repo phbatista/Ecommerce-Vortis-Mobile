@@ -283,18 +283,25 @@ function calcularFreteEAtualizar() {
 async function validarCupom(campoId, tipo) {
     const codigo = document.getElementById(campoId).value;
     if (!codigo) return;
+
     try {
         const resp = await fetch(`http://localhost:8080/api/cupons/validar/${codigo}?idCliente=${idCliente}`);
         if (resp.ok) {
             const cupom = await resp.json();
-            if (tipo === 'promo') descontoCupomPromo = cupom.valor;
-            if (tipo === 'troca') descontoCupomTroca = cupom.valor;
+
+            if (tipo === 'promo') {
+                descontoCupomPromo = cupom.valor;
+            } else if (tipo === 'troca') {
+                descontoCupomTroca = cupom.valor;
+            }
+
             alert(`Cupom aplicado: R$ ${cupom.valor.toFixed(2)}`);
         } else {
             if (tipo === 'promo') descontoCupomPromo = 0;
             if (tipo === 'troca') descontoCupomTroca = 0;
             alert("Cupom inválido");
         }
+
         atualizarTabela(ultimoFreteAplicado);
     } catch (e) {
         alert("Erro ao validar cupom");
@@ -348,7 +355,7 @@ async function enviarPedido() {
     const frete = totalItens * 7.90;
     const descontoPromo = document.getElementById("cupomPromocional").value.toUpperCase() === "TESTE" ? 100.0 : 0.0;
     const descontoTroca = 0.0; // ajustar depois
-    const totalCarrinho = Math.max(totalProdutos + frete - descontoPromo - descontoTroca, 0);
+    const totalCarrinho = Math.max(totalProdutos + frete - descontoCupomPromo - descontoCupomTroca, 0);
 
     if (usando2Cartoes) {
         const id1 = document.getElementById("cartao1")?.value;
