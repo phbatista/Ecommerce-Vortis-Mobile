@@ -63,18 +63,26 @@ public class EstoqueServico {
         estoque.setFornecedor(dto.getFornecedor());
         estoque.setCustoUnitario(BigDecimal.valueOf(dto.getCustoUnitario()));
         estoque.setQuantidade(dto.getQuantidade());
-        estoque.setPrecoVenda(precoVenda); // novo campo
+        estoque.setPrecoVenda(precoVenda);
 
         return estoqueRepositorio.save(estoque);
     }
 
-    public void reporPorTroca(Produto produto, int quantidade) {
+    public void reporPorTroca(Produto produto, int quantidade, String tipo) {
+        Estoque ultimaEntrada = estoqueRepositorio
+                .findTopByProdutoOrderByDataEntradaDesc(produto)
+                .orElse(null);
+
+        BigDecimal custo = ultimaEntrada != null ? ultimaEntrada.getCustoUnitario() : BigDecimal.ZERO;
+        BigDecimal precoVenda = ultimaEntrada != null ? ultimaEntrada.getPrecoVenda() : BigDecimal.ZERO;
+
         Estoque entrada = new Estoque();
         entrada.setProduto(produto);
         entrada.setQuantidade(quantidade);
         entrada.setDataEntrada(java.time.LocalDate.now());
-        entrada.setFornecedor("TROCA");
-        entrada.setCustoUnitario(java.math.BigDecimal.ZERO);
+        entrada.setFornecedor(tipo.equalsIgnoreCase("DEVOLUCAO") ? "DEVOLUÇÃO" : "TROCA");
+        entrada.setCustoUnitario(custo);
+        entrada.setPrecoVenda(precoVenda);
 
         estoqueRepositorio.save(entrada);
     }

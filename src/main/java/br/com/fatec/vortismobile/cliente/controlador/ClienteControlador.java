@@ -201,7 +201,7 @@ public class ClienteControlador {
 
             if (passwordEncoder.matches(login.getSenha(), cliente.getSenha())) {
                 // responde apenas com id e nome
-                ClienteDTO dto = new ClienteDTO(cliente.getId(), cliente.getNome());
+                ClienteDTO dto = new ClienteDTO(cliente.getId(), cliente.getNome(), cliente.getEmail());
                 return ResponseEntity.ok(dto);
             } else {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Senha inválida");

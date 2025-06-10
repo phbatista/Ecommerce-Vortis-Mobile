@@ -2,13 +2,10 @@ package br.com.fatec.vortismobile.chatbot.controlador;
 
 import br.com.fatec.vortismobile.chatbot.servico.ChatGPTServico;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -19,15 +16,16 @@ public class ChatBotControlador {
     private ChatGPTServico chatGPTService;
 
     @PostMapping
-    public ResponseEntity<Map<String, String>> conversar(@RequestBody Map<String, String> body) {
-        String pergunta = body.get("mensagem");
+    public ResponseEntity<Map<String, String>> conversar(@RequestBody Map<String, Object> body) {
         try {
-            String resposta = chatGPTService.gerarResposta(pergunta);
+            Long idCliente = Long.parseLong(body.get("idCliente").toString());
+            List<Map<String, String>> mensagens = (List<Map<String, String>>) body.get("mensagens");
+
+            String resposta = chatGPTService.gerarResposta(idCliente, mensagens);
             return ResponseEntity.ok(Map.of("resposta", resposta));
         } catch (Exception e) {
-            e.printStackTrace(); // <- isso mostra o erro exato no console
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("erro", "Erro ao processar sua solicitação."));
+            e.printStackTrace();
+            return ResponseEntity.status(500).body(Map.of("resposta", "Erro ao processar sua solicitação."));
         }
     }
 }

@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
-    // Login
+
     const btnLogin = document.getElementById("btnLogin");
     if (btnLogin) {
         btnLogin.addEventListener("click", async () => {
@@ -15,10 +15,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 if (resp.ok) {
                     const cliente = await resp.json();
-                    console.log("Cliente recebido:", cliente); // ✅ pode deixar pra teste
+                    console.log("Cliente recebido:", cliente);
 
                     sessionStorage.setItem("idCliente", cliente.id);
-                    sessionStorage.setItem("nomeCliente", cliente.nome); // ✅ ESSENCIAL
+                    sessionStorage.setItem("nomeCliente", cliente.nome);
+                    sessionStorage.setItem("emailCliente", cliente.email); // ✅ ESSENCIAL para exibir o menu Admin
 
                     window.location.href = "/catalogo";
                 } else {
@@ -32,7 +33,6 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // Menu Login/Logout
     const idCliente = sessionStorage.getItem("idCliente");
     const menu = document.getElementById("menuUsuario");
 

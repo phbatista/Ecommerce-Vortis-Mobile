@@ -10,14 +10,28 @@ document.addEventListener("DOMContentLoaded", async () => {
 
             const select = document.createElement("select");
             select.className = "form-select";
+
+            const statusAtual = p.status;
+            const opcoesPermitidas = {
+                "EM PROCESSAMENTO": ["APROVADO", "REPROVADO"],
+                "APROVADO": ["EM TRANSPORTE"],
+                "EM TRANSPORTE": ["ENTREGUE"]
+            };
+
             [
                 "EM PROCESSAMENTO", "REPROVADO", "APROVADO", "CANCELADO", "EM TRANSPORTE", "ENTREGUE"
             ].forEach(status => {
                 const opt = document.createElement("option");
                 opt.value = status;
                 opt.textContent = status;
-                if (p.status === status) opt.selected = true;
-                select.appendChild(opt);
+
+                if (status === statusAtual) {
+                    opt.selected = true;
+                }
+
+                if (status === statusAtual || (opcoesPermitidas[statusAtual] || []).includes(status)) {
+                    select.appendChild(opt);
+                }
             });
 
             const botao = document.createElement("button");
@@ -35,7 +49,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
                     if (resposta.ok) {
                         alert("Status atualizado com sucesso!");
-                        location.reload(); // atualiza a tabela
+                        location.reload();
                     } else {
                         alert("Erro ao atualizar status.");
                     }
@@ -45,11 +59,12 @@ document.addEventListener("DOMContentLoaded", async () => {
             };
 
             linha.innerHTML = `
-                <td>${p.id}</td>
-                <td>${p.clienteNome}</td>
-                <td>${new Date(p.dataVenda).toLocaleString()}</td>
-                <td>${p.status}</td>
-            `;
+        <td>${p.id}</td>
+        <td>${p.clienteNome}</td>
+        <td>${new Date(p.dataVenda).toLocaleString()}</td>
+        <td>${p.status}</td>
+    `;
+
             const tdSelect = document.createElement("td");
             tdSelect.appendChild(select);
 

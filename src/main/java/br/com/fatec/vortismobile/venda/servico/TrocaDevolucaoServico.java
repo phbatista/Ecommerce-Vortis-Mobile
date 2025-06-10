@@ -26,6 +26,9 @@ import java.util.List;
 public class TrocaDevolucaoServico {
 
     @Autowired
+    private CupomTrocaServico cupomTrocaServico;
+
+    @Autowired
     private NotificacaoServico notificacaoServico;
 
     @Autowired
@@ -103,13 +106,6 @@ public class TrocaDevolucaoServico {
 
     }
 
-    public List<TrocaDevolucao> listarTodasAsTrocas() {
-        return trocaDevolucaoRepositorio.findAll();
-    }
-
-    @Autowired
-    private CupomTrocaServico cupomTrocaServico;
-
     public void confirmarRecebimento(Long idTroca, boolean retornarEstoque) {
         TrocaDevolucao troca = trocaDevolucaoRepositorio.findById(idTroca)
                 .orElseThrow(() -> new RuntimeException("Solicitação não encontrada."));
@@ -121,17 +117,21 @@ public class TrocaDevolucaoServico {
         if (retornarEstoque) {
             for (ItemTrocaDevolucao item : troca.getItens()) {
                 Produto produto = item.getProduto();
-                estoqueServico.reporPorTroca(produto, item.getQuantidade());
-                produtoRepositorio.save(produto);
+                estoqueServico.reporPorTroca(produto, item.getQuantidade(), troca.getTipo());
             }
         }
 
-        troca.setStatus(troca.getTipo().equals("TROCA") ? "TROCA CONCLUÍDA" : "DEVOLUÇÃO CONCLUÍDA");
+        String statusFinal = troca.getTipo().equalsIgnoreCase("TROCA") ? "TROCA CONCLUÍDA" : "DEVOLUÇÃO CONCLUÍDA";
+        troca.setStatus(statusFinal);
         trocaDevolucaoRepositorio.save(troca);
 
-        // Gerar cupom de troca
-        if (troca.getTipo().equals("TROCA")) {
-            cupomTrocaServico.gerarCupomParaVenda(troca.getVenda());
+        Venda venda = troca.getVenda();
+        venda.setStatus(troca.getTipo().equalsIgnoreCase("TROCA") ? "TROCA ACEITA" : "DEVOLUÇÃO ACEITA");
+        vendaRepositorio.save(venda);
+
+        // Gera cupom apenas se for troca
+        if (troca.getTipo().equalsIgnoreCase("TROCA")) {
+            cupomTrocaServico.gerarCupomParaVenda(venda);
         }
     }
 
