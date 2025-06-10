@@ -42,7 +42,7 @@ public class ChatGPTServico {
     public String gerarResposta(Long idCliente, List<Map<String, String>> mensagens) throws IOException {
         List<Produto> produtos = produtoRepositorio.findAll();
         Map<String, List<Produto>> produtosPorCategoria = new HashMap<>();
-        StringBuilder contextoProdutos = new StringBuilder(); // ✅ agora no lugar certo
+        StringBuilder contextoProdutos = new StringBuilder();
 
         int contador = 1;
 
@@ -100,6 +100,7 @@ public class ChatGPTServico {
                 "- Se o cliente já disser para quem é o celular (ex: filho, mãe, idoso), **não pergunte de novo**.\n" +
                 "- Faça perguntas relevantes só se ainda não foram respondidas.\n" +
                 "- Considere as categorias como diferenciais.\n\n" +
+                "- Forneça o cupom 'CHAT150' caso o ChatBot tenha ajudado a pessoa ou se ela perguntar se tem algum desconto.\n\n" +
                 categoriasTexto + "\n\nProdutos disponíveis:\n" + contextoProdutos;
 
         List<Map<String, String>> mensagensComSistema = new ArrayList<>();
