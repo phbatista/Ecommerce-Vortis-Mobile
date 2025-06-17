@@ -3,6 +3,7 @@ package br.com.fatec.vortismobile.venda.controlador;
 import br.com.fatec.vortismobile.cliente.modelo.Endereco;
 import br.com.fatec.vortismobile.venda.dto.PedidoRespostaDTO;
 import br.com.fatec.vortismobile.venda.dto.VendaDTO;
+import br.com.fatec.vortismobile.venda.dto.VendaResumoDTO;
 import br.com.fatec.vortismobile.venda.modelo.ItemVenda;
 import br.com.fatec.vortismobile.venda.modelo.Venda;
 import br.com.fatec.vortismobile.venda.modelo.VendaCartao;
@@ -11,9 +12,11 @@ import br.com.fatec.vortismobile.venda.repositorio.VendaCartaoRepositorio;
 import br.com.fatec.vortismobile.venda.repositorio.VendaRepositorio;
 import br.com.fatec.vortismobile.venda.servico.VendaServico;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,6 +36,16 @@ public class VendaControlador {
 
     @Autowired
     private VendaServico vendaServico;
+
+    //RF0055 //RNF0043
+    @GetMapping("/admin/historico-vendas")
+    public ResponseEntity<List<VendaResumoDTO>> consultarHistoricoVendas(
+            @RequestParam("inicio") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate inicio,
+            @RequestParam("fim") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fim,
+            @RequestParam("tipo") String tipo // "produto" ou "categoria"
+    ) {
+        return ResponseEntity.ok(vendaServico.resumirVendasPorPeriodo(inicio, fim, tipo));
+    }
 
     @PostMapping
     public ResponseEntity<?> criarVenda(@RequestBody VendaDTO dto) {

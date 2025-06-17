@@ -22,4 +22,7 @@ public class VendaViewControlador {
 
     @GetMapping("trocas_admin")
     public String trocasAdminPage() {return "trocas/trocas_admin";}
+
+    @GetMapping("dashboard")
+    public String dashboardPage() {return "dashboard/dashboard";}
 }

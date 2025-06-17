@@ -90,18 +90,21 @@ async function renderizarProdutos(produtos) {
         card.classList.add("col-md-3", "mb-4");
 
         card.innerHTML = `
-            <div class="card h-100">
-                <img src="${imagemSrc}" class="card-img-top" style="height: 259px; object-fit: cover;" alt="Imagem do Produto">
-                <div class="card-body text-center">
-                    <h5 class="card-title">${produto.nome}</h5>
-                    <p class="text-muted small">${produto.categorias.map(cat => cat.nome).join(" • ")}</p>
-                    <p class="card-text">${precoVendaTexto}</p>
-                    <button class="btn btn-dark btn-comprar" data-id="${produto.id}" ${totalEstoque <= 0 ? "disabled" : ""}>
-                        ${totalEstoque <= 0 ? "Indisponível" : "Comprar"}
-                    </button>
-                </div>
+    <div class="card h-100">
+        <img src="${imagemSrc}" class="card-img-top" style="height: 259px; object-fit: cover;" alt="Imagem do Produto">
+        <div class="card-body text-center">
+            <h5 class="card-title">${produto.nome}</h5>
+            <p class="text-muted small">${produto.categorias.map(cat => cat.nome).join(" • ")}</p>
+            <p class="card-text">${precoVendaTexto}</p>
+            <div class="d-grid gap-2">
+                <button class="btn btn-dark btn-comprar" data-id="${produto.id}" ${totalEstoque <= 0 ? "disabled" : ""}>
+                    ${totalEstoque <= 0 ? "Indisponível" : "Comprar"}
+                </button>
+                <a href="produto.html?id=${produto.id}" class="btn btn-outline-secondary">Ver Detalhes</a>
             </div>
-        `;
+        </div>
+    </div>
+`;
 
         container.appendChild(card);
 

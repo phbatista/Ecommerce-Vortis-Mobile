@@ -19,4 +19,8 @@ public class ProdutoViewControlador {
 
     @GetMapping("produtos_edicao")
     public String produtoEdicao() {return "produtos/produtos_edicao";}
+
+    @GetMapping("/produto.html")
+    public String produtoPage() {return "produtos/produto";}
+
 }

@@ -9,10 +9,12 @@ import br.com.fatec.vortismobile.cupom.servico.CupomServico;
 import br.com.fatec.vortismobile.estoque.modelo.Estoque;
 import br.com.fatec.vortismobile.estoque.repositorio.EstoqueRepositorio;
 import br.com.fatec.vortismobile.notificacao.servico.NotificacaoServico;
+import br.com.fatec.vortismobile.produto.modelo.Categoria;
 import br.com.fatec.vortismobile.produto.modelo.Produto;
 import br.com.fatec.vortismobile.produto.repositorio.ProdutoRepositorio;
 import br.com.fatec.vortismobile.venda.dto.PedidoRespostaDTO;
 import br.com.fatec.vortismobile.venda.dto.VendaDTO;
+import br.com.fatec.vortismobile.venda.dto.VendaResumoDTO;
 import br.com.fatec.vortismobile.venda.modelo.CupomTroca;
 import br.com.fatec.vortismobile.venda.modelo.ItemVenda;
 import br.com.fatec.vortismobile.venda.modelo.Venda;
@@ -23,9 +25,11 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class VendaServico {
@@ -361,4 +365,33 @@ public class VendaServico {
         return mapearParaDTO(vendas); // reutilize a lógica do listarTodosPedidos()
     }
 
+    //RNF0043 RF0055
+    public List<VendaResumoDTO> resumirVendasPorPeriodo(LocalDate inicio, LocalDate fim, String tipo) {
+        List<Venda> vendas = vendaRepositorio.findByDataVendaBetween(inicio.atStartOfDay(), fim.atTime(23, 59));
+        List<VendaResumoDTO> resultado = new ArrayList<>();
+
+        for (Venda v : vendas) {
+            for (ItemVenda item : v.getItens()) {
+
+                if ("categoria".equalsIgnoreCase(tipo)) {
+                    for (Categoria c : item.getProduto().getCategorias()) {
+                        VendaResumoDTO dto = new VendaResumoDTO();
+                        dto.setNomeProdutoOuCategoria(c.getNome());
+                        dto.setDataVenda(v.getDataVenda().toLocalDate());
+                        dto.setQuantidadeVendida(item.getQuantidade());
+                        resultado.add(dto);
+                    }
+                } else {
+                    VendaResumoDTO dto = new VendaResumoDTO();
+                    dto.setNomeProdutoOuCategoria(item.getProduto().getNome());
+                    dto.setDataVenda(v.getDataVenda().toLocalDate());
+                    dto.setQuantidadeVendida(item.getQuantidade());
+                    resultado.add(dto);
+                }
+
+            }
+        }
+
+        return resultado;
+    }
 }
