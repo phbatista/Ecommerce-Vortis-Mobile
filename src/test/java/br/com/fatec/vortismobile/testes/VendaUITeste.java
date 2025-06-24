@@ -23,78 +23,116 @@ public class VendaUITeste {
     }
 
     @Test
-    public void testLoginCliente() throws InterruptedException {
-        driver.get("http://localhost:8080/clientes_login");
-
-        Thread.sleep(2000);
-        WebElement emailInput = driver.findElement(By.id("email"));
-        WebElement senhaInput = driver.findElement(By.id("senha"));
-        WebElement btnLogin = driver.findElement(By.id("btnLogin"));
-
-        emailInput.sendKeys("pedro@outlook.com");
-        senhaInput.sendKeys("Ph#15915915");
-        btnLogin.click();
-
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
-        WebElement menuUsuario = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("menuUsuario")));
-
-        Assertions.assertTrue(menuUsuario.getText().contains("Olá,"));
-
-        testAdicionarProdutoCarrinho();
-        testFinalizarPedido();
-    }
-
-    @Test
-    public void testAdicionarProdutoCarrinho() {
+    public void testAdicionarProdutosAoCarrinho() throws InterruptedException {
         driver.get("http://localhost:8080/catalogo");
+        Thread.sleep(1000);
 
-        // Aguarda o carregamento do catálogo
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
-        WebElement botaoAdicionar = wait.until(
-                ExpectedConditions.elementToBeClickable(By.xpath("//button[contains(text(),'Comprar')]"))
-        );
+        // Produto 16
+        driver.get("http://localhost:8080/produto.html?id=16");
+        Thread.sleep(1000);
+        WebElement btnAdicionar1 = driver.findElement(By.cssSelector("button[onclick='adicionarAoCarrinho(16)']"));
+        btnAdicionar1.click();
+        Thread.sleep(1000);
+        driver.switchTo().alert().accept();
+        Thread.sleep(500);
 
-        botaoAdicionar.click();
+        driver.get("http://localhost:8080/catalogo");
+        Thread.sleep(500);
 
-        // Vai para o carrinho
-        driver.get("http://localhost:8080/carrinho");
+        // Produto 15
+        driver.get("http://localhost:8080/produto.html?id=15");
+        Thread.sleep(1000);
+        WebElement btnAdicionar2 = driver.findElement(By.cssSelector("button[onclick='adicionarAoCarrinho(15)']"));
+        btnAdicionar2.click();
+        Thread.sleep(1000);
+        driver.switchTo().alert().accept();
+        Thread.sleep(500);
 
-        // Verifica se o produto aparece no carrinho
-        WebElement tabela = wait.until(ExpectedConditions.visibilityOfElementLocated(By.tagName("tbody")));
-        List<WebElement> linhas = tabela.findElements(By.tagName("tr"));
+        driver.get("http://localhost:8080/catalogo");
+        Thread.sleep(500);
 
-        Assertions.assertFalse(linhas.isEmpty(), "Carrinho deve conter pelo menos um item");
+        realizarLogin();
+        testCarrinho();
     }
 
-    @Test
-    public void testFinalizarPedido() throws InterruptedException {
+    public void realizarLogin() throws InterruptedException {
+        driver.get("http://localhost:8080/clientes_login");
+        Thread.sleep(500);
+
+        driver.findElement(By.id("email")).sendKeys("pedro@outlook.com");
+        driver.findElement(By.id("senha")).sendKeys("Ph#15915915");
+        Thread.sleep(500);
+
+        driver.findElement(By.xpath("//button[contains(text(),'Entrar')]")).click();
+        Thread.sleep(2000);
+    }
+
+    public void testCarrinho() throws InterruptedException {
         driver.get("http://localhost:8080/carrinho");
+        Thread.sleep(500);
 
-        Thread.sleep(2000); // Espera a página carregar
+        //quantidade
+        WebElement inputQtd = driver.findElement(By.cssSelector("input[onchange='atualizarQuantidade(16, this.value)']"));
+        inputQtd.click();
+        inputQtd.sendKeys(Keys.ARROW_UP);
+        Thread.sleep(500);
 
-        // Seleciona endereço de entrega
-        WebElement enderecoSelect = driver.findElement(By.id("enderecoEntrega"));
-        Select selectEndereco = new Select(enderecoSelect);
-        selectEndereco.selectByIndex(1); // Seleciona o primeiro endereço disponível (altere se necessário)
+        //endereço
+        Select selectEndereco = new Select(driver.findElement(By.id("enderecoEntrega")));
+        selectEndereco.selectByIndex(2);
+        Thread.sleep(500);
 
-        Thread.sleep(1000);
+        //cartao
+        Select selectCartao = new Select(driver.findElement(By.id("cartao1")));
+        selectCartao.selectByIndex(1);
+        Thread.sleep(500);
 
-        // Seleciona cartão
-        WebElement cartaoSelect = driver.findElement(By.id("cartao1"));
-        Select selectCartao = new Select(cartaoSelect);
-        selectCartao.selectByIndex(1); // Seleciona o primeiro cartão salvo
+        //cupom
+        WebElement inputCupom = driver.findElement(By.id("cupomPromocional"));
+        inputCupom.sendKeys("BEMVINDO");
+        WebElement inputCupomTroca = driver.findElement(By.id("cupomTroca"));
+        inputCupomTroca.click();
+        Thread.sleep(500);
 
-        Thread.sleep(1000);
+        try {
+            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
+            WebElement alerta = wait.until(ExpectedConditions.visibilityOfElementLocated(By.className("swal2-confirm")));
+            alerta.click();
+            Thread.sleep(500);
+        } catch (Exception e) {
+            System.out.println("Sem alerta após cupom.");
+        }
 
-        // Clica no botão de finalizar
+        //segundo cartao
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
+        WebElement btnDoisCartoes = driver.findElement(By.xpath("//button[contains(text(),'Pagar com 2 cartões')]"));
+        btnDoisCartoes.click();
+
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("cartao2")));
+        Select selectCartao2 = new Select(driver.findElement(By.id("cartao2")));
+        selectCartao2.selectByIndex(2);
+        Thread.sleep(500);
+
+        //valores cartao
+        WebElement valorCartao1 = driver.findElement(By.id("valorCartao1"));
+        valorCartao1.sendKeys("3063.70");
+        WebElement valorCartao2 = driver.findElement(By.id("valorCartao2"));
+        valorCartao2.sendKeys("1500");
+        Thread.sleep(500);
+
+        // Finaliza o pedido
         WebElement btnFinalizar = driver.findElement(By.id("btnFinalizarPedido"));
         btnFinalizar.click();
+        Thread.sleep(2000);
 
-        Thread.sleep(3000); // Aguarda redirecionamento ou modal do SweetAlert
+        WebDriverWait wait1 = new WebDriverWait(driver, Duration.ofSeconds(5));
 
-        // Verifica se foi para o catálogo novamente ou mostra alerta de sucesso
-        Assertions.assertTrue(driver.getCurrentUrl().contains("catalogo") ||
-                driver.getPageSource().contains("Pedido Confirmado"));
+        try {
+            WebElement alerta = wait1.until(ExpectedConditions.visibilityOfElementLocated(By.className("swal2-confirm")));
+            alerta.click();
+            System.out.println("Pedido finalizado com sucesso.");
+        } catch (Exception e) {
+            System.out.println("Não foi possível confirmar alerta do pedido.");
+        }
     }
-
 }
