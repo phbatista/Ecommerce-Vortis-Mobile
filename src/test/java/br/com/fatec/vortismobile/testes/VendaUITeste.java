@@ -79,7 +79,7 @@ public class VendaUITeste {
 
         //endereço
         Select selectEndereco = new Select(driver.findElement(By.id("enderecoEntrega")));
-        selectEndereco.selectByIndex(2);
+        selectEndereco.selectByIndex(1);
         Thread.sleep(500);
 
         //cartao
@@ -115,16 +115,17 @@ public class VendaUITeste {
 
         //valores cartao
         WebElement valorCartao1 = driver.findElement(By.id("valorCartao1"));
-        valorCartao1.sendKeys("3063.70");
+        valorCartao1.sendKeys("3000");
         WebElement valorCartao2 = driver.findElement(By.id("valorCartao2"));
-        valorCartao2.sendKeys("1500");
+        valorCartao2.sendKeys("1185.70");
         Thread.sleep(500);
 
         // Finaliza o pedido
-        WebElement btnFinalizar = driver.findElement(By.id("btnFinalizarPedido"));
-        btnFinalizar.click();
+        WebElement btnFinalizar = wait.until(ExpectedConditions.presenceOfElementLocated(By.id("btnFinalizarPedido")));
+        JavascriptExecutor js = (JavascriptExecutor) driver;
+        js.executeScript("arguments[0].scrollIntoView(true);", btnFinalizar);
+        js.executeScript("arguments[0].click();", btnFinalizar);
         Thread.sleep(2000);
-
         WebDriverWait wait1 = new WebDriverWait(driver, Duration.ofSeconds(5));
 
         try {
