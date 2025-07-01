@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.util.UUID;
+import java.math.RoundingMode;
 
 @Service
 public class CupomTrocaServico {
@@ -25,7 +26,6 @@ public class CupomTrocaServico {
         String codigo = "TROCA-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
         cupom.setCodigo(codigo);
 
-        // Usa o valor efetivamente pago (soma dos cartões)
         double totalPago = venda.getCartoes().stream()
                 .mapToDouble(VendaCartao::getValor)
                 .sum();
@@ -34,10 +34,11 @@ public class CupomTrocaServico {
                 .subtract(BigDecimal.valueOf(venda.getFrete()))
                 .max(BigDecimal.ZERO);
 
-        cupom.setValor(valorCupom);
-        cupom.setUsado(false);
+        BigDecimal valorArredondado = valorCupom.setScale(2, RoundingMode.HALF_UP);
 
-        System.out.println("Cupom gerado: " + codigo + " | Valor final: R$ " + valorCupom);
+        cupom.setValor(valorArredondado);
+
+        System.out.println("Cupom gerado: " + codigo + " | Valor final: R$ " + valorArredondado);
 
         cupomTrocaRepositorio.save(cupom);
         notificacaoServico.gerarNotificacaoCupomGerado(cupom);
