@@ -7,133 +7,172 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.openqa.selenium.Alert;
 import java.time.Duration;
-import java.util.List;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class VendaUITeste {
 
+    private void pausaParaDemonstracao(int segundos) {
+        try {
+            Thread.sleep(segundos * 1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
     private static WebDriver driver;
+    private static WebDriverWait wait;
 
     @BeforeAll
     public static void setup() {
         WebDriverManager.chromedriver().setup();
         driver = new ChromeDriver();
-        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
+        wait = new WebDriverWait(driver, Duration.ofSeconds(10));
         driver.manage().window().maximize();
     }
 
+    @AfterAll
+    public static void tearDown() {
+        if (driver != null) {
+            driver.quit();
+        }
+    }
+
     @Test
-    public void testAdicionarProdutosAoCarrinho() throws InterruptedException {
-        driver.get("http://localhost:8080/catalogo");
-        Thread.sleep(1000);
+    @DisplayName("Deve executar o fluxo completo de venda, desde o cadastro de estoque até a compra pelo cliente")
+    public void testFluxoDeVendaCompleto() {
 
-        // Produto 16
-        driver.get("http://localhost:8080/produto.html?id=16");
-        Thread.sleep(1000);
-        WebElement btnAdicionar1 = driver.findElement(By.cssSelector("button[onclick='adicionarAoCarrinho(16)']"));
-        btnAdicionar1.click();
-        Thread.sleep(1000);
-        driver.switchTo().alert().accept();
-        Thread.sleep(500);
+        loginAdmin();
+        cadastrarEstoqueDosProdutos();
+        logout();
 
-        driver.get("http://localhost:8080/catalogo");
-        Thread.sleep(500);
-
-        // Produto 15
-        driver.get("http://localhost:8080/produto.html?id=15");
-        Thread.sleep(1000);
-        WebElement btnAdicionar2 = driver.findElement(By.cssSelector("button[onclick='adicionarAoCarrinho(15)']"));
-        btnAdicionar2.click();
-        Thread.sleep(1000);
-        driver.switchTo().alert().accept();
-        Thread.sleep(500);
-
-        driver.get("http://localhost:8080/catalogo");
-        Thread.sleep(500);
-
-        realizarLogin();
-        testCarrinho();
+        loginCliente();
+        adicionarProdutosAoCarrinho();
+        preencherCarrinhoEFinalizar();
     }
 
-    public void realizarLogin() throws InterruptedException {
+    public void loginAdmin() {
+        System.out.println("LOG: Iniciando login como Admin...");
         driver.get("http://localhost:8080/clientes_login");
-        Thread.sleep(500);
-
-        driver.findElement(By.id("email")).sendKeys("pedro@outlook.com");
-        driver.findElement(By.id("senha")).sendKeys("Ph#15915915");
-        Thread.sleep(500);
-
-        driver.findElement(By.xpath("//button[contains(text(),'Entrar')]")).click();
-        Thread.sleep(2000);
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("email"))).sendKeys("admin@vortismobile.com");
+        driver.findElement(By.id("senha")).sendKeys("Ph#15915915"); // Assumindo senha do admin
+        driver.findElement(By.id("btnLogin")).click();
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("menuAdmin")));
+        System.out.println("LOG: Login como Admin bem-sucedido.");
     }
 
-    public void testCarrinho() throws InterruptedException {
+    public void cadastrarEstoqueDosProdutos() {
+        System.out.println("LOG: Navegando para a página de Estoque...");
+        driver.get("http://localhost:8080/estoque");
+
+        cadastrarProdutoNoEstoque("16", "10", "1500.00", "Fornecedor Tech");
+        pausaParaDemonstracao(2);
+
+        cadastrarProdutoNoEstoque("15", "5", "2500.00", "Fornecedor Global");
+        pausaParaDemonstracao(2);
+
+        System.out.println("LOG: Cadastro de estoque finalizado.");
+    }
+
+    private void cadastrarProdutoNoEstoque(String idProduto, String quantidade, String custo, String fornecedor) {
+        System.out.println("LOG: Cadastrando estoque para o produto ID: " + idProduto);
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("produto")));
+
+        new Select(driver.findElement(By.id("produto"))).selectByValue(idProduto);
+        driver.findElement(By.id("dataEntrada")).sendKeys(LocalDate.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+        driver.findElement(By.id("fornecedor")).sendKeys(fornecedor);
+        driver.findElement(By.id("custoUnitario")).sendKeys(custo);
+        driver.findElement(By.id("quantidade")).sendKeys(quantidade);
+        driver.findElement(By.cssSelector("button[type='submit']")).click();
+
+        Alert alert = wait.until(ExpectedConditions.alertIsPresent());
+        assertEquals("Estoque cadastrado com sucesso!", alert.getText());
+        alert.accept();
+        System.out.println("LOG: Estoque para o produto ID " + idProduto + " cadastrado com sucesso.");
+    }
+
+    public void logout() {
+        WebElement btnLogout = wait.until(ExpectedConditions.elementToBeClickable(By.id("btnLogout")));
+        btnLogout.click();
+        System.out.println("LOG: Logout realizado.");
+        pausaParaDemonstracao(2);
+    }
+
+    public void loginCliente() {
+        System.out.println("LOG: Iniciando login como Cliente...");
+        driver.get("http://localhost:8080/clientes_login");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("email"))).sendKeys("pedro@outlook.com");
+        driver.findElement(By.id("senha")).sendKeys("Ph#15915915");
+        driver.findElement(By.id("btnLogin")).click();
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("btnLogout")));
+        System.out.println("LOG: Login como Cliente bem-sucedido.");
+        pausaParaDemonstracao(2);
+    }
+
+    public void adicionarProdutosAoCarrinho() {
+        System.out.println("LOG: Adicionando produtos ao carrinho...");
+        adicionarProdutoEspecificoAoCarrinho("16");
+        pausaParaDemonstracao(2);
+        adicionarProdutoEspecificoAoCarrinho("15");
+        pausaParaDemonstracao(2);
+    }
+
+    private void adicionarProdutoEspecificoAoCarrinho(String idProduto) {
+        driver.get("http://localhost:8080/produto.html?id=" + idProduto);
+        WebElement btnAdicionar = wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("button[onclick^='adicionarAoCarrinho']")));
+        btnAdicionar.click();
+        wait.until(ExpectedConditions.alertIsPresent()).accept();
+        System.out.println("LOG: Produto ID " + idProduto + " adicionado ao carrinho.");
+        pausaParaDemonstracao(2);
+    }
+
+    public void preencherCarrinhoEFinalizar() {
+        System.out.println("LOG: Preenchendo dados no carrinho e finalizando a compra...");
         driver.get("http://localhost:8080/carrinho");
-        Thread.sleep(500);
 
-        //quantidade
-        WebElement inputQtd = driver.findElement(By.cssSelector("input[onchange='atualizarQuantidade(16, this.value)']"));
-        inputQtd.click();
+        WebElement inputQtd = wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("input[onchange*='atualizarQuantidade(16']")));
         inputQtd.sendKeys(Keys.ARROW_UP);
-        Thread.sleep(500);
+        pausaParaDemonstracao(1);
 
-        //endereço
-        Select selectEndereco = new Select(driver.findElement(By.id("enderecoEntrega")));
-        selectEndereco.selectByIndex(1);
-        Thread.sleep(500);
+        new Select(driver.findElement(By.id("enderecoEntrega"))).selectByIndex(1);
+        new Select(driver.findElement(By.id("cartao1"))).selectByIndex(1);
+        driver.findElement(By.xpath("//button[contains(text(),'Pagar com 2 cartões')]")).click();
+        WebElement cartao2Select = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("cartao2")));
+        new Select(cartao2Select).selectByIndex(2);
+        pausaParaDemonstracao(1);
 
-        //cartao
-        Select selectCartao = new Select(driver.findElement(By.id("cartao1")));
-        selectCartao.selectByIndex(1);
-        Thread.sleep(500);
-
-        //cupom
         WebElement inputCupom = driver.findElement(By.id("cupomPromocional"));
         inputCupom.sendKeys("BEMVINDO");
-        WebElement inputCupomTroca = driver.findElement(By.id("cupomTroca"));
-        inputCupomTroca.click();
-        Thread.sleep(500);
+        driver.findElement(By.id("cupomTroca")).click();
 
-        try {
-            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
-            WebElement alerta = wait.until(ExpectedConditions.visibilityOfElementLocated(By.className("swal2-confirm")));
-            alerta.click();
-            Thread.sleep(500);
-        } catch (Exception e) {
-            System.out.println("Sem alerta após cupom.");
-        }
+        Alert cupomAlert = wait.until(ExpectedConditions.alertIsPresent());
+        System.out.println("LOG: Alerta de cupom encontrado: " + cupomAlert.getText());
+        cupomAlert.accept();
+        pausaParaDemonstracao(2);
 
-        //segundo cartao
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
-        WebElement btnDoisCartoes = driver.findElement(By.xpath("//button[contains(text(),'Pagar com 2 cartões')]"));
-        btnDoisCartoes.click();
-
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("cartao2")));
-        Select selectCartao2 = new Select(driver.findElement(By.id("cartao2")));
-        selectCartao2.selectByIndex(2);
-        Thread.sleep(500);
-
-        //valores cartao
         WebElement valorCartao1 = driver.findElement(By.id("valorCartao1"));
-        valorCartao1.sendKeys("3000");
+        ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", valorCartao1);
+        valorCartao1.sendKeys("4500");
+
         WebElement valorCartao2 = driver.findElement(By.id("valorCartao2"));
-        valorCartao2.sendKeys("1185.70");
-        Thread.sleep(500);
+        ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", valorCartao2);
+        valorCartao2.sendKeys("4723.7");
+        pausaParaDemonstracao(1);
 
-        // Finaliza o pedido
-        WebElement btnFinalizar = wait.until(ExpectedConditions.presenceOfElementLocated(By.id("btnFinalizarPedido")));
-        JavascriptExecutor js = (JavascriptExecutor) driver;
-        js.executeScript("arguments[0].scrollIntoView(true);", btnFinalizar);
-        js.executeScript("arguments[0].click();", btnFinalizar);
-        Thread.sleep(2000);
-        WebDriverWait wait1 = new WebDriverWait(driver, Duration.ofSeconds(5));
+        System.out.println("LOG: Procurando e clicando no botão Finalizar Pedido...");
+        WebElement btnFinalizar = driver.findElement(By.id("btnFinalizarPedido"));
+        ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", btnFinalizar);
+        pausaParaDemonstracao(1); // Pausa para ver o scroll acontecer
+        ((JavascriptExecutor) driver).executeScript("arguments[0].click();", btnFinalizar);
 
-        try {
-            WebElement alerta = wait1.until(ExpectedConditions.visibilityOfElementLocated(By.className("swal2-confirm")));
-            alerta.click();
-            System.out.println("Pedido finalizado com sucesso.");
-        } catch (Exception e) {
-            System.out.println("Não foi possível confirmar alerta do pedido.");
-        }
+        WebElement alertConfirmButton = wait.until(ExpectedConditions.visibilityOfElementLocated(By.className("swal2-confirm")));
+        assertEquals("Pedido Confirmado!", driver.findElement(By.id("swal2-title")).getText());
+        pausaParaDemonstracao(1);
+        alertConfirmButton.click();
+        System.out.println("LOG: Pedido finalizado com sucesso.");
     }
 }
