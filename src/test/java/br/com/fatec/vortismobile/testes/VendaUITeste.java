@@ -42,6 +42,7 @@ public class VendaUITeste {
         }
     }
 
+    //teste sem erro
     @Test
     @DisplayName("Deve executar o fluxo completo de venda, desde o cadastro de estoque até a compra pelo cliente")
     public void testFluxoDeVendaCompleto() {
@@ -53,6 +54,33 @@ public class VendaUITeste {
         loginCliente();
         adicionarProdutosAoCarrinho();
         preencherCarrinhoEFinalizar();
+    }
+
+    //teste com erro
+    @Test
+    @DisplayName("Deve exibir mensagem de erro ao tentar usar um cupom inválido")
+    public void testCompraComCupomInvalido() {
+
+        loginCliente();
+        adicionarProdutosAoCarrinho();
+
+        System.out.println("LOG: Navegando para o carrinho para testar cupom inválido...");
+        driver.get("http://localhost:8080/carrinho");
+
+        WebElement inputCupom = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("cupomPromocional")));
+        inputCupom.sendKeys("CUPOM-QUE-NAO-EXISTE");
+
+        driver.findElement(By.id("cupomTroca")).click();
+
+        Alert cupomAlert = wait.until(ExpectedConditions.alertIsPresent());
+        System.out.println("LOG: Alerta de erro encontrado: " + cupomAlert.getText());
+
+        assertEquals("Cupom inválido", cupomAlert.getText());
+
+        cupomAlert.accept();
+
+        System.out.println("LOG: Teste de cupom inválido finalizado com sucesso.");
+        pausaParaDemonstracao(3);
     }
 
     public void loginAdmin() {
