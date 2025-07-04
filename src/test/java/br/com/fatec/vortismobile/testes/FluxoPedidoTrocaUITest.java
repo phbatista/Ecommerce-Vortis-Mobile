@@ -18,7 +18,7 @@ public class FluxoPedidoTrocaUITest {
     private static WebDriver driver;
     private static WebDriverWait wait;
 
-    private final String ID_PEDIDO_TESTE = "58";
+    private final String ID_PEDIDO_TESTE = "7";
 
     @BeforeAll
     public static void setup() {

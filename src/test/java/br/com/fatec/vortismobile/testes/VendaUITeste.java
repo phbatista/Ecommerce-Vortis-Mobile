@@ -87,7 +87,7 @@ public class VendaUITeste {
         System.out.println("LOG: Iniciando login como Admin...");
         driver.get("http://localhost:8080/clientes_login");
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("email"))).sendKeys("admin@vortismobile.com");
-        driver.findElement(By.id("senha")).sendKeys("Ph#15915915"); // Assumindo senha do admin
+        driver.findElement(By.id("senha")).sendKeys("Ph#15915915");
         driver.findElement(By.id("btnLogin")).click();
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("menuAdmin")));
         System.out.println("LOG: Login como Admin bem-sucedido.");
